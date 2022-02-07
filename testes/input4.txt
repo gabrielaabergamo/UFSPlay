@@ -1,0 +1,66 @@
+SET ARQUIVO_USUARIOS '66545678765;SnailThemi;mariaeugenia@gmail.com;***********;4815002008.12;########################################################99876556782;ezPz#Fireclan;ga.augusto@gmail.com;***********;0000000000.00;#######################################################44565434213;forninhocaiu;ge.santana@gmail.com;***********;0000000005.00;########################################################54654367865;batata_doce;galmeida@gmail.com;***********;0000000190.00;###########################################################';
+
+-- OPERAÇÕES CONTEMPLADAS PELO CASO DE TESTE:
+-- COM ARQUIVO DE USUARIOS
+-- CADASTRO DE USUARIO
+-- DEPÓSITO DE SALDO
+-- IMPRIMIR ARQUIVO USUARIOS
+-- LISTAGEM DE USUARIOS
+-- REMOÇÃO DE USUARIO
+-- LIBERAÇÃO DE MEMORIA
+
+\echo file ARQUIVO_USUARIOS
+SELECT * FROM usuarios ORDER BY id_user ASC;
+
+-- usuario com CPF duplicado
+INSERT INTO usuarios VALUES ('66545678765', 'linkinpark1991', 'roberta91@gmail.com');
+INSERT INTO usuarios VALUES ('99876556782', 'linkinpark1991', 'roberta91@gmail.com');
+INSERT INTO usuarios VALUES ('44565434213', 'linkinpark1991', 'roberta91@gmail.com');
+INSERT INTO usuarios VALUES ('54654367865', 'linkinpark1991', 'roberta91@gmail.com');
+\echo file ARQUIVO_USUARIOS
+SELECT * FROM usuarios ORDER BY id_user ASC;
+
+-- depósito para o usuario C
+UPDATE usuarios SET saldo = saldo + 5 WHERE id_user = '44565434213';
+\echo file ARQUIVO_USUARIOS
+SELECT * FROM usuarios ORDER BY id_user ASC;
+
+-- depósito para um usuario inexistente
+UPDATE usuarios SET saldo = saldo + 1250.80 WHERE id_user = '3987655678';
+\echo file ARQUIVO_USUARIOS
+SELECT * FROM usuarios ORDER BY id_user ASC;
+
+-- depósito válido para o usuario A utilizando todos os dígitos disponíveis para o saldo
+UPDATE usuarios SET saldo = saldo + 4815002008.12 WHERE id_user = '66545678765';
+\echo file ARQUIVO_USUARIOS
+SELECT * FROM usuarios ORDER BY id_user ASC;
+
+-- depósito válido para o usuario D
+UPDATE usuarios SET saldo = saldo + 190.33 WHERE id_user = '54654367865';
+\echo file ARQUIVO_USUARIOS
+SELECT * FROM usuarios ORDER BY id_user ASC;
+
+-- operação com valor invalido para o usuario C
+UPDATE usuarios SET saldo = saldo + 0 WHERE id_user = '54654367865';
+\echo file ARQUIVO_USUARIOS
+SELECT * FROM usuarios ORDER BY id_user ASC;
+
+-- remoção do usuário C
+DELETE FROM usuarios WHERE id_user = '44565434213';
+\echo file ARQUIVO_USUARIOS
+SELECT * FROM usuarios ORDER BY id_user ASC;
+
+-- remoção de usuário já removido
+DELETE FROM usuarios WHERE id_user = '44565434213';
+SELECT * FROM usuarios ORDER BY id_user ASC;
+
+-- liberação de memória
+VACUUM usuarios;
+\echo file ARQUIVO_USUARIOS
+
+-- remoção de usuário inexistente
+DELETE FROM usuarios WHERE id_user = '00000000000';
+\echo file ARQUIVO_USUARIOS
+SELECT * FROM usuarios ORDER BY id_user ASC;
+
+\q

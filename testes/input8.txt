@@ -1,0 +1,75 @@
+SET ARQUIVO_USUARIOS '66545678765;SnailThemi;mariaeugenia@gmail.com;***********;0000000030.00;########################################################99876556782;ezPz#Fireclan;ga.augusto@gmail.com;***********;0000000000.00;#######################################################44565434213;forninhocaiu;ge.santana@gmail.com;***********;0000000029.69;########################################################54654367865;batata_doce;galmeida@gmail.com;***********;0000001250.80;###########################################################37567876542;Erlkonigin;melissa@gmail.com;***********;1000000440.92;#############################################################14565436782;melange;melissa@gmail.com;***********;0000000250.00;################################################################01733495010;Literally a metal straw;metal.straws@gmail.com;***********;0000000000.00;###########################################62155476035;JSantos;jose.santos@hotmail.com;***********;0000000000.00;##########################################################18406718072;EmilioRemedios;remedios.emilio@hotmail.com;***********;0000000000.00;###############################################';
+SET ARQUIVO_JOGOS '00000000;Meia-Vida;Valvula;Valvula;19981119;0000000029.69;;#####################################################################################################################################################################################################00000001;Presa;Cabeca de Melao Studios;40K Jogos;20070711;0000000044.29;;#######################################################################################################################################################################################00000002;Catorze Minutos;Antonio Luis;Annapurr;20210819;0000000051.99;;#########################################################################################################################################################################################00000003;Esquerda 4 Morto 2;Valvula;Valvula;20091117;0000000020.69;;############################################################################################################################################################################################00000004;Cavaleiro Vazio;Time Cereja;Time Cereja;20170224;0000000027.99;;#######################################################################################################################################################################################00000005;Katana -1;Askiihard;Retornar Analogo;20190418;0000000028.99;;##########################################################################################################################################################################################00000006;Overtale;Tobias Raposa;Tobias Raposa;20190418;0000000019.99;;##########################################################################################################################################################################################00000007;Pluto;Supertiny Games;Supertiny Games;20200917;0000000047.49;;#########################################################################################################################################################################################00000008;After Your Eyes;HelloWorld Games;Groundbound Games;20210408;0000000020.69;;############################################################################################################################################################################';
+SET ARQUIVO_COMPRAS '445654342132021092000000000375678765422021092400000004375678765422021100300000008665456787652021100500000005';
+
+-- OPERAÇÕES CONTEMPLADAS PELO CASO DE TESTE:
+-- COM ARQUIVOS
+-- CADASTRO DE NOTA
+-- BUSCA DE JOGOS POR TITULO
+-- LISTAGEM DE USUARIOS
+-- IMPRIMIR ARQUIVO USUARIOS
+-- IMPRIMIR ARQUIVO JOGOS
+-- IMPRIMIR ARQUIVO COMPRAS
+-- IMPRIMIR ÍNDICE DE USUARIOS
+-- IMPRIMIR ÍNDICE DE JOGOS
+-- IMPRIMIR ÍNDICE DE TITULO
+-- IMPRIMIR ÍNDICE DE COMPRAS
+-- IMPRIMIR ÍNDICE DE DATA
+-- REMOÇÃO DE USUARIO
+-- LIBERAÇÃO DE MEMORIA
+
+\echo file ARQUIVO_USUARIOS
+\echo file ARQUIVO_JOGOS
+\echo file ARQUIVO_COMPRAS
+\echo index usuarios_idx
+\echo index jogos_idx
+\echo index compras_idx
+\echo index titulo_idx
+\echo index data_user_game_idx
+
+-- buscando jogos existentes pelo titulo
+SELECT * FROM jogos WHERE titulo = 'Meia-Vida';
+SELECT * FROM jogos WHERE titulo = 'Esquerda 4 Morto 2';
+SELECT * FROM jogos WHERE titulo = 'Catorze Minutos';
+
+-- buscando jogos inexistentes pelo titulo
+SELECT * FROM jogos WHERE titulo = 'Meia-Vida 2: Episodio 2 - Parte 2-2';
+SELECT * FROM jogos WHERE titulo = 'Had Dad Redemption';
+SELECT * FROM jogos WHERE titulo = 'Return of the Sobradinho';
+SELECT * FROM jogos WHERE titulo = 'Yes Womans Land';
+
+-- listar compras entre datas
+SELECT * FROM compras WHERE data_compra BETWEEN '20000101' AND '21001231' ORDER BY data_compra ASC
+SELECT * FROM compras WHERE data_compra BETWEEN '20210920' AND '20211003' ORDER BY data_compra ASC
+SELECT * FROM compras WHERE data_compra BETWEEN '20210919' AND '20210925' ORDER BY data_compra ASC
+SELECT * FROM compras WHERE data_compra BETWEEN '20210922' AND '20210928' ORDER BY data_compra ASC
+SELECT * FROM compras WHERE data_compra BETWEEN '20220101' AND '20220303' ORDER BY data_compra ASC
+
+\echo file ARQUIVO_USUARIOS
+\echo file ARQUIVO_JOGOS
+\echo file ARQUIVO_COMPRAS
+\echo index usuarios_idx
+\echo index jogos_idx
+\echo index compras_idx
+\echo index titulo_idx
+\echo index data_user_game_idx
+
+-- remoção de cada usuário
+DELETE FROM usuarios WHERE id_user = '66545678765';
+DELETE FROM usuarios WHERE id_user = '99876556782';
+DELETE FROM usuarios WHERE id_user = '44565434213';
+DELETE FROM usuarios WHERE id_user = '54654367865';
+DELETE FROM usuarios WHERE id_user = '37567876542';
+DELETE FROM usuarios WHERE id_user = '14565436782';
+DELETE FROM usuarios WHERE id_user = '01733495010';
+DELETE FROM usuarios WHERE id_user = '62155476035';
+DELETE FROM usuarios WHERE id_user = '18406718072';
+SELECT * FROM usuarios ORDER BY id_user ASC;
+\echo index usuarios_idx
+\echo file ARQUIVO_USUARIOS
+
+-- liberação de memória
+VACUUM usuarios;
+\echo file ARQUIVO_USUARIOS
+
+\q
