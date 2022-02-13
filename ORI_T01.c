@@ -5,8 +5,8 @@
  *
  * Trabalho 01 - Indexação
  *
- * RA: 760925
- * Aluno: Gabriela Bergamo dos Santos
+ * RA: 
+ * Aluno: 
  * ========================================================================== */
 
 /* Bibliotecas */
@@ -222,29 +222,6 @@ uint64_t prng_rand() {
     x ^= x >> 27; // c
     prng_seed = x;
     return x * UINT64_C(0x2545F4914F6CDD1D);
-}
-
-/**
- * Gera um <a href="https://en.wikipedia.org/wiki/Universally_unique_identifier">UUID Version-4 Variant-1</a>
- * (<i>string</i> aleatória) de 36 caracteres utilizando o gerador de números pseudo-aleatórios
- * <a href="https://en.wikipedia.org/wiki/Xorshift#xorshift*">xorshift*</a>. O UUID é
- * escrito na <i>string</i> fornecida como parâmetro.<br />
- * <br />
- * Exemplo de uso:<br />
- * <code>
- * char chave_aleatoria[37];<br />
- * new_uuid(chave_aleatoria);<br />
- * printf("chave aleatória: %s&#92;n", chave_aleatoria);<br />
- * </code>
- *
- * @param buffer String de tamanho 37 no qual será escrito
- * o UUID. É terminado pelo caractere <code>\0</code>.
- */
-void new_uuid(char buffer[37]) {
-    uint64_t r1 = prng_rand();
-    uint64_t r2 = prng_rand();
-
-    sprintf(buffer, "%08x-%04x-%04lx-%04lx-%012lx", (uint32_t)(r1 >> 32), (uint16_t)(r1 >> 16), 0x4000 | (r1 & 0x0fff), 0x8000 | (r2 & 0x3fff), r2 >> 16);
 }
 
 /* Funções de manipulação de data */
@@ -852,10 +829,6 @@ void escrever_registro_compra(Compra c, int rrn) {
 
 /* Funções principais */
 void cadastrar_usuario_menu(char *id_user, char *username, char *email) {
-    usuarios_index indice;
-    
-    busca_binaria((void*)&indice, usuarios_idx, qtd_registros_usuarios, sizeof(indice), qsort_usuarios_idx, false);
-
     /* <<< COMPLETE AQUI A IMPLEMENTAÇÃO >>> */
     printf(ERRO_NAO_IMPLEMENTADO, "cadastrar_usuario_menu");
 }
