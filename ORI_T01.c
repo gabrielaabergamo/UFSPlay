@@ -5,8 +5,8 @@
  *
  * Trabalho 01 - Indexação
  *
- * RA: 
- * Aluno: 
+ * RA: 760925
+ * Aluno: Gabriela Bergamo dos Santos
  * ========================================================================== */
 
 /* Bibliotecas */
@@ -686,19 +686,86 @@ void criar_usuarios_idx() {
 /* Cria o índice primário jogos_idx */
 void criar_jogos_idx() {
     /* <<< COMPLETE AQUI A IMPLEMENTAÇÃO >>> */
-    printf(ERRO_NAO_IMPLEMENTADO, "criar_jogos_idx");
+    if (!jogos_idx)
+        jogos_idx = malloc(MAX_REGISTROS * sizeof(jogos_idx));
+
+    if (!jogos_idx) {
+        printf(ERRO_MEMORIA_INSUFICIENTE);
+        exit(1);
+    }
+
+    for (unsigned i = 0; i < qtd_registros_jogos; ++i) {
+        Jogo u = recuperar_registro_jogo(i);
+
+        if (strncmp(u.id_game, "*|", 2) == 0)
+            jogos_idx[i].rrn = -1; // registro excluído
+        else
+            jogos_idx[i].rrn = i;
+
+        strcpy(jogos_idx[i].id_game, u.id_game);
+    }
+
+    qsort(jogos_idx, qtd_registros_jogos, sizeof(jogos_index), qsort_jogos_idx);
+
+    // printf(ERRO_NAO_IMPLEMENTADO, "criar_jogos_idx");
 }
 
 /* Cria o índice primário compras_idx */
 void criar_compras_idx() {
     /* <<< COMPLETE AQUI A IMPLEMENTAÇÃO >>> */
-    printf(ERRO_NAO_IMPLEMENTADO, "criar_compras_idx");
+    // if (!jogos_idx)
+    //     criar_jogos_idx();
+
+    // if (!usuarios_idx)
+    //     criar_usuarios_idx();
+
+    if(!compras_idx)
+        compras_idx= malloc(MAX_REGISTROS * sizeof(compras_idx));  
+
+    if (!compras_idx) {
+        printf(ERRO_MEMORIA_INSUFICIENTE);
+        exit(1);
+    }      
+
+    for (unsigned i = 0; i < qtd_registros_compras; ++i) {
+        Compra u = recuperar_registro_compra(i);
+
+        if (strncmp(u.id_game, "*|", 2) == 0 || strncmp(u.id_user_dono, "*|", 2) == 0)
+            compras_idx[i].rrn = -1; // registro excluído
+        else
+            compras_idx[i].rrn = i;
+
+        strcpy(compras_idx[i].id_game, u.id_game);
+        strcpy(compras_idx[i].id_user, u.id_user_dono);
+    }
+
+    qsort(compras_idx, qtd_registros_compras, sizeof(compras_index), qsort_compras_idx);    
+
+    //printf(ERRO_NAO_IMPLEMENTADO, "criar_compras_idx");
 }
 
 /* Cria o índice secundário titulo_idx */
 void criar_titulo_idx() {
     /* <<< COMPLETE AQUI A IMPLEMENTAÇÃO >>> */
-    printf(ERRO_NAO_IMPLEMENTADO, "criar_titulo_idx");
+    if(!titulo_idx)
+    titulo_idx= malloc(MAX_REGISTROS * sizeof(titulo_idx));  
+
+    if (!titulo_idx) {
+        printf(ERRO_MEMORIA_INSUFICIENTE);
+        exit(1);
+    } 
+
+    for (unsigned i = 0; i < qtd_registros_jogos; ++i) {
+        Jogo u = recuperar_registro_jogo(i);
+
+        if (strncmp(u.id_game, "*|", 2) != 0){
+            strcpy(titulo_idx[i].id_game, u.id_game);
+            strcpy(titulo_idx[i].titulo, u.titulo);
+        }  
+    }
+    qsort(titulo_idx, qtd_registros_jogos, sizeof(titulos_index), qsort_titulo_idx);    
+
+    // printf(ERRO_NAO_IMPLEMENTADO, "criar_titulo_idx");
 }
 
 /* Cria o índice secundário data_user_game_idx */
