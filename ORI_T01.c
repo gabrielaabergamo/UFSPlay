@@ -770,13 +770,40 @@ void criar_titulo_idx() {
 
 /* Cria o índice secundário data_user_game_idx */
 void criar_data_user_game_idx() {
-    /* <<< COMPLETE AQUI A IMPLEMENTAÇÃO >>> */
-    printf(ERRO_NAO_IMPLEMENTADO, "criar_data_user_game_idx");
+    /* <<< COMPLETE AQUI A IMPLEMENTAÇÃO >>> */ 
+
+    if(!data_user_game_idx)
+        data_user_game_idx= malloc(MAX_REGISTROS * sizeof(data_user_game_idx));  
+
+    if (!data_user_game_idx) {
+        printf(ERRO_MEMORIA_INSUFICIENTE);
+        exit(1);
+    } 
+
+    for (unsigned i = 0; i < qtd_registros_compras; ++i) {
+        Compra u = recuperar_registro_compra(i);
+
+        if (strncmp(u.id_game, "*|", 2) != 0){
+            strcpy(data_user_game_idx[i].id_game, u.id_game);
+            strcpy(data_user_game_idx[i].id_user, u.id_user_dono);
+            strcpy(data_user_game_idx[i].data, u.data_compra);
+        }  
+    }
+    qsort(data_user_game_idx, qtd_registros_compras, sizeof(data_user_game_index), qsort_data_user_game_idx);   
+
+
+    // printf(ERRO_NAO_IMPLEMENTADO, "criar_data_user_game_idx");
 }
 
 /* Cria os índices (secundário e primário) de categorias_idx */
 void criar_categorias_idx() {
     /* <<< COMPLETE AQUI A IMPLEMENTAÇÃO >>> */
+    /*inicializar lista*/
+    categorias_idx.categorias_secundario_idx = (categorias_secundario_index*)malloc(sizeof(categorias_secundario_index));
+    categorias_idx.categorias_primario_idx = (categorias_primario_index*)malloc(sizeof(categorias_primario_index));
+
+
+
     printf(ERRO_NAO_IMPLEMENTADO, "criar_categorias_idx");
 }
 
@@ -850,6 +877,7 @@ Jogo recuperar_registro_jogo(int rrn) {
  * informado e retorna os dados na struct Compra */
 Compra recuperar_registro_compra(int rrn) {     
     /* <<< COMPLETE AQUI A IMPLEMENTAÇÃO >>> */
+
     printf(ERRO_NAO_IMPLEMENTADO, "recuperar_registro_compra");
 }
 
