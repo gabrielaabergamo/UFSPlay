@@ -799,8 +799,11 @@ void criar_data_user_game_idx() {
 void criar_categorias_idx() {
     /* <<< COMPLETE AQUI A IMPLEMENTAÇÃO >>> */
     /*inicializar lista*/
-    categorias_idx.categorias_secundario_idx = (categorias_secundario_index*)malloc(sizeof(categorias_secundario_index));
     categorias_idx.categorias_primario_idx = (categorias_primario_index*)malloc(sizeof(categorias_primario_index));
+    categorias_idx.categorias_secundario_idx = (categorias_secundario_index*)malloc(sizeof(categorias_secundario_index));
+
+
+   
 
 
 
@@ -1100,30 +1103,35 @@ int qsort_usuarios_idx(const void *a, const void *b) {
 /* Função de comparação entre chaves do índice jogos_idx */
 int qsort_jogos_idx(const void *a, const void *b) {
     /* <<< COMPLETE AQUI A IMPLEMENTAÇÃO >>> */
-    printf(ERRO_NAO_IMPLEMENTADO, "qsort_jogos_idx");
+    return strcmp( ( (jogos_index *)a )->id_game, ( (jogos_index *)b )->id_game);
+    //printf(ERRO_NAO_IMPLEMENTADO, "qsort_jogos_idx");
 }
 
 /* Função de comparação entre chaves do índice compras_idx */
 int qsort_compras_idx(const void *a, const void *b) {
     /* <<< COMPLETE AQUI A IMPLEMENTAÇÃO >>> */
-    printf(ERRO_NAO_IMPLEMENTADO, "qsort_compras_idx");
+    return (strcmp( ( (compras_index *)a )->id_user, ( (compras_index *)b )->id_user) && strcmp( ( (compras_index *)a )->id_game, ( (compras_index *)b )->id_game));
+   // printf(ERRO_NAO_IMPLEMENTADO, "qsort_compras_idx");
 }
 
 /* Função de comparação entre chaves do índice titulo_idx */
 int qsort_titulo_idx(const void *a, const void *b) {
     /* <<< COMPLETE AQUI A IMPLEMENTAÇÃO >>> */
-    printf(ERRO_NAO_IMPLEMENTADO, "qsort_titulo_idx");
+     return (strcmp( ( (titulos_index *)a )->titulo, ( (titulos_index *)b )->titulo) && strcmp( ( (titulos_index *)a )->id_game, ( (titulos_index *)b )->id_game));
+    //printf(ERRO_NAO_IMPLEMENTADO, "qsort_titulo_idx");
 }
 
 /* Funções de comparação entre chaves do índice data_user_game_idx */
 int qsort_data_idx(const void *a, const void *b) {
     /* <<< COMPLETE AQUI A IMPLEMENTAÇÃO >>> */
-    printf(ERRO_NAO_IMPLEMENTADO, "qsort_data_idx");
+    return strcmp( ( (data_user_game_index *)a )->data, ( (data_user_game_index *)b )->data);
+    //printf(ERRO_NAO_IMPLEMENTADO, "qsort_data_idx");
 }
 
 int qsort_data_user_game_idx(const void *a, const void *b) {
     /* <<< COMPLETE AQUI A IMPLEMENTAÇÃO >>> */
-    printf(ERRO_NAO_IMPLEMENTADO, "qsort_data_user_game_idx");
+    return strcmp( ( (data_user_game_index *)a )->id_user, ( (data_user_game_index *)b )->id_user);
+    //printf(ERRO_NAO_IMPLEMENTADO, "qsort_data_user_game_idx");
 }
 
 /* Função de comparação entre chaves do índice secundário de categorias_idx */
@@ -1161,7 +1169,22 @@ char* strpadright(char *str, char pad, unsigned size) {
 /* Funções da busca binária */
 void* busca_binaria(const void *key, const void *base0, size_t nmemb, size_t size, int (*compar)(const void *, const void *), bool exibir_caminho) {
     /* <<< COMPLETE AQUI A IMPLEMENTAÇÃO >>> */
-    printf(ERRO_NAO_IMPLEMENTADO, "busca_binaria");
+    //int (*compar)(const void *, const void *) = funções qsort
+    //( (jogos_index *)a )
+    int imax = nmemb - 1;
+    int imin = 0;
+
+    while(imax>=imin){
+        int imid = imin + ((imax-imin)/2);
+        if(key > base0[imid])
+            imin = imid + 1;
+        else if(*key < base0[imid])
+            imax = imid -1;
+        else 
+            return imid;     
+    }
+    return -1;
+    //printf(ERRO_NAO_IMPLEMENTADO, "busca_binaria");
 }
 
 void* busca_binaria_piso(const void* key, void* base, size_t num, size_t size, int (*compar)(const void*,const void*)) {
