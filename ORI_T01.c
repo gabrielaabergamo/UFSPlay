@@ -1170,6 +1170,33 @@ void* busca_binaria(const void *key, const void *base0, size_t nmemb, size_t siz
     /* <<< COMPLETE AQUI A IMPLEMENTAÇÃO >>> */
     //int (*compar)(const void *, const void *) = funções qsort
 
+    if(exibir_caminho){
+        size_t imin, imax, imid;
+        const void *p;
+        int comp;
+        imin = 0;
+        imax = nmemb;
+        while (imin < imax)
+            {
+            imid = (imin + imax) / 2;
+            p = (void *) (((const char *) base0) + (imid * size));
+            comp = (*compar) (key, p);
+            if (comp < 0){
+                imax = imid;
+                printf("%d", imax);
+            }  
+            else if (comp > 0){
+                imin = imid + 1;
+                printf("%d", imin);
+            }
+            else{
+                printf("%d", p);
+                return (void *) p;
+            }
+                
+            }
+        return -1;
+    }
     size_t imin, imax, imid;
     const void *p;
     int comp;
