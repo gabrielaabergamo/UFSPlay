@@ -1148,14 +1148,22 @@ void inverted_list_insert(char *chave_secundaria, char *chave_primaria, inverted
 
 bool inverted_list_secondary_search(int *result, bool exibir_caminho, char *chave_secundaria, inverted_list *t) {
     /* <<< COMPLETE AQUI A IMPLEMENTAÇÃO >>> */
-    printf(ERRO_NAO_IMPLEMENTADO, "inverted_list_secondary_search");
+     void *aux = busca_binaria(&chave_secundaria, t->categorias_secundario_idx,t->qtd_registros_secundario ,sizeof(t->categorias_secundario_idx), qsort_categorias_secundario_idx, exibir_caminho);
+
+    if(result){
+        result = aux;
+    }
+    if (aux){
+         return true;
+    }
+     return false;
+    //printf(ERRO_NAO_IMPLEMENTADO, "inverted_list_secondary_search");
 }
 
 int inverted_list_primary_search(char result[][TAM_CHAVE_CATEGORIAS_PRIMARIO_IDX], bool exibir_caminho, int indice, int *indice_final, inverted_list *t) {
     /* <<< COMPLETE AQUI A IMPLEMENTAÇÃO >>> */
     printf(ERRO_NAO_IMPLEMENTADO, "inverted_list_primary_search");
 }
-
 
 char* strpadright(char *str, char pad, unsigned size) {
     for (unsigned i = strlen(str); i < size; ++i)
@@ -1164,12 +1172,9 @@ char* strpadright(char *str, char pad, unsigned size) {
     return str;
 }
 
-
 /* Funções da busca binária */
 void* busca_binaria(const void *key, const void *base0, size_t nmemb, size_t size, int (*compar)(const void *, const void *), bool exibir_caminho) {
     /* <<< COMPLETE AQUI A IMPLEMENTAÇÃO >>> */
-    //int (*compar)(const void *, const void *) = funções qsort
-
     if(exibir_caminho){
         size_t imin, imax, imid;
         const void *p;
@@ -1178,24 +1183,24 @@ void* busca_binaria(const void *key, const void *base0, size_t nmemb, size_t siz
         imax = nmemb;
         while (imin < imax)
             {
-            imid = (imin + imax) / 2;
-            p = (void *) (((const char *) base0) + (imid * size));
-            comp = (*compar) (key, p);
-            if (comp < 0){
-                imax = imid;
-                printf("%d", imax);
-            }  
-            else if (comp > 0){
-                imin = imid + 1;
-                printf("%d", imin);
+                imid = (imin + imax) / 2;
+                printf("%zu", imid);
+                p = (void *) (((const char *) base0) + (imid * size));
+                comp = (*compar) (key, p);
+                if (comp < 0){
+                    imax = imid;
+                    printf("%zu", imax);
+                }  
+                else if (comp > 0){
+                    imin = imid + 1;
+                    printf("%zu", imin);
+                }
+                else{
+                    printf("%zu", p);
+                    return (void *) p;
+                }  
             }
-            else{
-                printf("%d", p);
-                return (void *) p;
-            }
-                
-            }
-        return -1;
+        return NULL;
     }
     size_t imin, imax, imid;
     const void *p;
@@ -1204,27 +1209,66 @@ void* busca_binaria(const void *key, const void *base0, size_t nmemb, size_t siz
     imax = nmemb;
     while (imin < imax)
         {
-        imid = (imin + imax) / 2;
-        p = (void *) (((const char *) base0) + (imid * size));
-        comp = (*compar) (key, p);
-        if (comp < 0)
-            imax = imid;
-        else if (comp > 0)
-            imin = imid + 1;
-        else
-            return (void *) p;
+            imid = (imin + imax) / 2;
+            p = (void *) (((const char *) base0) + (imid * size));
+            comp = (*compar) (key, p);
+            if (comp < 0)
+                imax = imid;
+            else if (comp > 0)
+                imin = imid + 1;
+            else
+                return (void *) p;
         }
-    return -1;
+    return NULL;
    
     //printf(ERRO_NAO_IMPLEMENTADO, "busca_binaria");
 }
 
 void* busca_binaria_piso(const void* key, void* base, size_t num, size_t size, int (*compar)(const void*,const void*)) {
     /* <<< COMPLETE AQUI A IMPLEMENTAÇÃO >>> */
-    printf(ERRO_NAO_IMPLEMENTADO, "busca_binaria_piso");
+    size_t imin, imax, imid;
+    const void *p;
+    int comp;
+    imin = 0;
+    imax = num;
+    while (imin < imax)
+        {
+            imid = (imin + imax) / 2;
+            p = (void *) (((const char *) base) + (imid * size));
+            comp = (*compar) (key, p);
+            if (comp < 0)
+                imax = imid;
+            else if (comp > 0)
+                imin = imid + 1;
+            else
+                return (void *) (((const char *) base) + ((imid-1) * size));
+        }
+    return NULL;
+    //problema: imid = 0 -> imid-1??
+    //printf(ERRO_NAO_IMPLEMENTADO, "busca_binaria_piso");
 }
 
 void* busca_binaria_teto(const void* key, void* base, size_t num, size_t size, int (*compar)(const void*,const void*)) {
     /* <<< COMPLETE AQUI A IMPLEMENTAÇÃO >>> */
-    printf(ERRO_NAO_IMPLEMENTADO, "busca_binaria_teto");
+
+    size_t imin, imax, imid;
+    const void *p;
+    int comp;
+    imin = 0;
+    imax = num;
+    while (imin < imax)
+        {
+            imid = (imin + imax) / 2;
+            p = (void *) (((const char *) base) + (imid * size));
+            comp = (*compar) (key, p);
+            if (comp < 0)
+                imax = imid;
+            else if (comp > 0)
+                imin = imid + 1;
+            else
+                return (void *) (((const char *) base) + ((imid+1) * size));
+        }
+    return NULL;
+
+    //printf(ERRO_NAO_IMPLEMENTADO, "busca_binaria_teto");
 }
