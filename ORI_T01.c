@@ -489,7 +489,6 @@ char* strpadright(char *str, char pad, unsigned size);
  * @return Retorna o elemento encontrado ou NULL se não encontrou.
  */
 void* busca_binaria(const void *key, const void *base0, size_t nmemb, size_t size, int (*compar)(const void *, const void *), bool exibir_caminho);
-
 /**
  * Função Genérica de busca binária que encontra o elemento de BAIXO mais próximo da chave.
  * Sua assinatura também é baseada na função bsearch da biblioteca C.
@@ -1170,20 +1169,26 @@ char* strpadright(char *str, char pad, unsigned size) {
 void* busca_binaria(const void *key, const void *base0, size_t nmemb, size_t size, int (*compar)(const void *, const void *), bool exibir_caminho) {
     /* <<< COMPLETE AQUI A IMPLEMENTAÇÃO >>> */
     //int (*compar)(const void *, const void *) = funções qsort
-    //( (jogos_index *)a )
-    int imax = nmemb - 1;
-    int imin = 0;
 
-    while(imax>=imin){
-        int imid = imin + ((imax-imin)/2);
-        if(key > base0[imid])
+    size_t imin, imax, imid;
+    const void *p;
+    int comp;
+    imin = 0;
+    imax = nmemb;
+    while (imin < imax)
+        {
+        imid = (imin + imax) / 2;
+        p = (void *) (((const char *) base0) + (imid * size));
+        comp = (*compar) (key, p);
+        if (comp < 0)
+            imax = imid;
+        else if (comp > 0)
             imin = imid + 1;
-        else if(*key < base0[imid])
-            imax = imid -1;
-        else 
-            return imid;     
-    }
+        else
+            return (void *) p;
+        }
     return -1;
+   
     //printf(ERRO_NAO_IMPLEMENTADO, "busca_binaria");
 }
 
