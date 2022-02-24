@@ -798,15 +798,41 @@ void criar_data_user_game_idx() {
 void criar_categorias_idx() {
     /* <<< COMPLETE AQUI A IMPLEMENTAÇÃO >>> */
     /*inicializar lista*/
+    if(!categorias_idx.categorias_primario_idx)
     categorias_idx.categorias_primario_idx = (categorias_primario_index*)malloc(sizeof(categorias_primario_index));
+
+    if (!categorias_idx.categorias_primario_idx) {
+        printf(ERRO_MEMORIA_INSUFICIENTE);
+        exit(1);
+    } 
+
+    if(!categorias_idx.categorias_secundario_idx)
     categorias_idx.categorias_secundario_idx = (categorias_secundario_index*)malloc(sizeof(categorias_secundario_index));
 
+    if (!categorias_idx.categorias_secundario_idx) {
+        printf(ERRO_MEMORIA_INSUFICIENTE);
+        exit(1);
+    } 
 
-   
+    /*for com qtd de jogos -> jogo j = recuperar jogo -> for dentro das cat dele -> if -> busca lista invertida*/
+
+    for(unsigned i = 0; i < qtd_registros_jogos; i++){
+        Jogo j = recuperar_registro_jogo(i);
+
+        for(unsigned g = 0; g < QTD_MAX_CATEGORIAS; g++){
+            if(!inverted_list_secondary_search(NULL,false,j.categorias[g],&categorias_idx)){
+                strcpy(categorias_idx.categorias_secundario_idx[categorias_idx.qtd_registros_secundario].chave_secundaria, j.categorias[g]);
+                categorias_idx.categorias_secundario_idx[categorias_idx.qtd_registros_secundario].primeiro_indice = categorias_idx.qtd_registros_primario;
+                categorias_idx.qtd_registros_secundario++;
+                strcpy(categorias_idx.categorias_primario_idx[categorias_idx.qtd_registros_primario].chave_primaria, j.id_game);
+                categorias_idx.categorias_primario_idx[categorias_idx.qtd_registros_primario].proximo_indice = -1;
+                categorias_idx.qtd_registros_primario++;
+            }     
+        }
+    }
 
 
-
-    printf(ERRO_NAO_IMPLEMENTADO, "criar_categorias_idx");
+   // printf(ERRO_NAO_IMPLEMENTADO, "criar_categorias_idx");
 }
 
 
@@ -1136,7 +1162,8 @@ int qsort_data_user_game_idx(const void *a, const void *b) {
 /* Função de comparação entre chaves do índice secundário de categorias_idx */
 int qsort_categorias_secundario_idx(const void *a, const void *b) {
     /* <<< COMPLETE AQUI A IMPLEMENTAÇÃO >>> */
-    printf(ERRO_NAO_IMPLEMENTADO, "qsort_categorias_secundario_idx");
+    return strcmp( ( (categorias_secundario_index *)a )->chave_secundaria , ( (categorias_secundario_index *)b )->chave_secundaria );
+    //printf(ERRO_NAO_IMPLEMENTADO, "qsort_categorias_secundario_idx");
 }
 
 
@@ -1148,12 +1175,12 @@ void inverted_list_insert(char *chave_secundaria, char *chave_primaria, inverted
 
 bool inverted_list_secondary_search(int *result, bool exibir_caminho, char *chave_secundaria, inverted_list *t) {
     /* <<< COMPLETE AQUI A IMPLEMENTAÇÃO >>> */
-     void *aux = busca_binaria(&chave_secundaria, t->categorias_secundario_idx,t->qtd_registros_secundario ,sizeof(t->categorias_secundario_idx), qsort_categorias_secundario_idx, exibir_caminho);
+     bool *aux = (bool*)busca_binaria(&chave_secundaria, t->categorias_secundario_idx,t->qtd_registros_secundario ,sizeof(t->categorias_secundario_idx), qsort_categorias_secundario_idx, exibir_caminho);
 
-    if(result){
-        result = aux;
-    }
     if (aux){
+        if(result){
+            *result = aux;
+        }
          return true;
     }
      return false;
@@ -1240,8 +1267,11 @@ void* busca_binaria_piso(const void* key, void* base, size_t num, size_t size, i
                 imax = imid;
             else if (comp > 0)
                 imin = imid + 1;
-            else
+            else{
+                if(imid - 1 >= 0)
                 return (void *) (((const char *) base) + ((imid-1) * size));
+            }
+                
         }
     return NULL;
     //problema: imid = 0 -> imid-1??
@@ -1265,8 +1295,12 @@ void* busca_binaria_teto(const void* key, void* base, size_t num, size_t size, i
                 imax = imid;
             else if (comp > 0)
                 imin = imid + 1;
-            else
+            else{
+                if(imid + 1 < num)
                 return (void *) (((const char *) base) + ((imid+1) * size));
+            }
+
+                
         }
     return NULL;
 
