@@ -9,6 +9,7 @@
         "functional": "c",
         "limits": "c",
         "optional": "c",
-        "vector": "c"
+        "vector": "c",
+        "__locale": "c"
     }
 }

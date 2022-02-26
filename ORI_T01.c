@@ -820,18 +820,28 @@ void criar_categorias_idx() {
         Jogo j = recuperar_registro_jogo(i);
 
         for(unsigned g = 0; g < QTD_MAX_CATEGORIAS; g++){
-            if(!inverted_list_secondary_search(NULL,false,j.categorias[g],&categorias_idx)){
+            int result;
+            if(!inverted_list_secondary_search(&result,false,j.categorias[g],&categorias_idx)){
                 strcpy(categorias_idx.categorias_secundario_idx[categorias_idx.qtd_registros_secundario].chave_secundaria, j.categorias[g]);
                 categorias_idx.categorias_secundario_idx[categorias_idx.qtd_registros_secundario].primeiro_indice = categorias_idx.qtd_registros_primario;
                 categorias_idx.qtd_registros_secundario++;
                 strcpy(categorias_idx.categorias_primario_idx[categorias_idx.qtd_registros_primario].chave_primaria, j.id_game);
                 categorias_idx.categorias_primario_idx[categorias_idx.qtd_registros_primario].proximo_indice = -1;
                 categorias_idx.qtd_registros_primario++;
-            }     
+            } else {
+                int aux;
+                for(int w = result; categorias_idx.categorias_primario_idx[w].proximo_indice != -1; w++){
+                    aux = categorias_idx.categorias_primario_idx[w].proximo_indice;
+                }
+
+                categorias_idx.categorias_primario_idx[aux].proximo_indice = categorias_idx.qtd_registros_primario;
+                strcpy(categorias_idx.categorias_primario_idx[categorias_idx.qtd_registros_primario].chave_primaria, j.id_game);
+                categorias_idx.categorias_primario_idx[categorias_idx.qtd_registros_primario].proximo_indice = -1;
+                categorias_idx.qtd_registros_primario++;
+            }
+            qsort(categorias_idx.categorias_secundario_idx, categorias_idx.qtd_registros_secundario, sizeof(inverted_list), qsort_categorias_secundario_idx); 
         }
     }
-
-
    // printf(ERRO_NAO_IMPLEMENTADO, "criar_categorias_idx");
 }
 
