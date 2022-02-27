@@ -963,7 +963,27 @@ void escrever_registro_compra(Compra c, int rrn) {
 /* Funções principais */
 void cadastrar_usuario_menu(char *id_user, char *username, char *email) {
     /* <<< COMPLETE AQUI A IMPLEMENTAÇÃO >>> */
-    printf(ERRO_NAO_IMPLEMENTADO, "cadastrar_usuario_menu");
+    if(busca_binaria(id_user, usuarios_idx, qtd_registros_usuarios, sizeof(usuarios_index), qsort_usuarios_idx, false)){
+        printf(ERRO_PK_REPETIDA, id_user);
+        return;
+    }
+    Usuario u;
+    strcpy(u.id_user, id_user);
+    strcpy(u.username, username);
+    strcpy(u.email, email);
+    strcpy(u.celular, "***********");
+    u.saldo = 0;
+
+    usuarios_idx[qtd_registros_usuarios+1].rrn= qtd_registros_usuarios;
+    qtd_registros_usuarios++;
+
+    escrever_registro_usuario(u, usuarios_idx[qtd_registros_usuarios].rrn);
+
+    criar_usuarios_idx();
+
+    printf(SUCESSO);
+
+    //printf(ERRO_NAO_IMPLEMENTADO, "cadastrar_usuario_menu");
 }
 
 void cadastrar_celular_menu(char* id_user, char* celular) {
@@ -983,6 +1003,9 @@ void cadastrar_jogo_menu(char *titulo, char *desenvolvedor, char *editora, char*
 
 void adicionar_saldo_menu(char *id_user, double valor) {
     /* <<< COMPLETE AQUI A IMPLEMENTAÇÃO >>> */
+
+
+
     printf(ERRO_NAO_IMPLEMENTADO, "adicionar_saldo_menu");
 }
 
@@ -1017,7 +1040,18 @@ void buscar_jogo_titulo_menu(char *titulo) {
 /* Listagem */
 void listar_usuarios_id_user_menu() {
     /* <<< COMPLETE AQUI A IMPLEMENTAÇÃO >>> */
-    printf(ERRO_NAO_IMPLEMENTADO, "listar_usuarios_id_user_menu");
+    if(qtd_registros_usuarios == 0){
+        printf(AVISO_NENHUM_REGISTRO_ENCONTRADO);
+        return;
+    }
+    for(int i = 0; i < qtd_registros_usuarios; i++){
+        //usuarios_index *aux = (usuarios_index*)malloc(sizeof(usuarios_index));
+        //strcpy(aux->id_user, usuarios_idx[i].id_user);
+
+        usuarios_index *user = (usuarios_index *)busca_binaria(usuarios_idx[i].id_user, usuarios_idx, qtd_registros_usuarios, sizeof(usuarios_index), qsort_usuarios_idx, false);
+        exibir_usuario(user->rrn);
+    }
+    //printf(ERRO_NAO_IMPLEMENTADO, "listar_usuarios_id_user_menu");
 }
 
 void listar_jogos_categorias_menu(char *categoria) {
@@ -1185,11 +1219,11 @@ void inverted_list_insert(char *chave_secundaria, char *chave_primaria, inverted
 
 bool inverted_list_secondary_search(int *result, bool exibir_caminho, char *chave_secundaria, inverted_list *t) {
     /* <<< COMPLETE AQUI A IMPLEMENTAÇÃO >>> */
-     bool *aux = (bool*)busca_binaria(&chave_secundaria, t->categorias_secundario_idx,t->qtd_registros_secundario ,sizeof(t->categorias_secundario_idx), qsort_categorias_secundario_idx, exibir_caminho);
+     categorias_secundario_index *aux = (categorias_secundario_index *)busca_binaria(&chave_secundaria, t->categorias_secundario_idx,t->qtd_registros_secundario ,sizeof(t->categorias_secundario_idx), qsort_categorias_secundario_idx, exibir_caminho);
 
     if (aux){
         if(result){
-            *result = aux;
+            *result = aux->primeiro_indice;
         }
          return true;
     }
@@ -1221,19 +1255,18 @@ void* busca_binaria(const void *key, const void *base0, size_t nmemb, size_t siz
         while (imin < imax)
             {
                 imid = (imin + imax) / 2;
-                printf("%zu", imid);
+                printf("%s", (char*)imid);
                 p = (void *) (((const char *) base0) + (imid * size));
                 comp = (*compar) (key, p);
                 if (comp < 0){
                     imax = imid;
-                    printf("%zu", imax);
+                    printf("%s", (char*)imax);
                 }  
                 else if (comp > 0){
                     imin = imid + 1;
-                    printf("%zu", imin);
+                    printf("%s", (char*)imin);
                 }
                 else{
-                    printf("%zu", p);
                     return (void *) p;
                 }  
             }
