@@ -963,7 +963,10 @@ void escrever_registro_compra(Compra c, int rrn) {
 /* Funções principais */
 void cadastrar_usuario_menu(char *id_user, char *username, char *email) {
     /* <<< COMPLETE AQUI A IMPLEMENTAÇÃO >>> */
-    if(busca_binaria(id_user, usuarios_idx, qtd_registros_usuarios, sizeof(usuarios_index), qsort_usuarios_idx, false)){
+    usuarios_index *temp = (usuarios_index*)malloc(sizeof(usuarios_index));
+    strcpy(temp->id_user, id_user);
+    usuarios_index *aux = (usuarios_index*)busca_binaria(temp, usuarios_idx, qtd_registros_usuarios, sizeof(usuarios_index), qsort_usuarios_idx, false);
+    if(aux){
         printf(ERRO_PK_REPETIDA, id_user);
         return;
     }
@@ -982,7 +985,7 @@ void cadastrar_usuario_menu(char *id_user, char *username, char *email) {
     criar_usuarios_idx();
 
     printf(SUCESSO);
-
+    free(temp);
     //printf(ERRO_NAO_IMPLEMENTADO, "cadastrar_usuario_menu");
 }
 
@@ -1013,6 +1016,7 @@ void adicionar_saldo_menu(char *id_user, double valor) {
     usuarios_index *aux = (usuarios_index*)busca_binaria(temp, usuarios_idx, qtd_registros_usuarios, sizeof(usuarios_index), qsort_usuarios_idx, false);
     if(!aux){
         printf(ERRO_REGISTRO_NAO_ENCONTRADO);
+        free(temp);
         return;
     }
 
@@ -1030,6 +1034,7 @@ void adicionar_saldo_menu(char *id_user, double valor) {
     escrever_registro_usuario(u, aux->rrn);
 
     printf(SUCESSO);
+    free(temp);
     //printf(ERRO_NAO_IMPLEMENTADO, "adicionar_saldo_menu");
 }
 
@@ -1184,7 +1189,12 @@ void imprimir_categorias_primario_idx_menu() {
 /* Liberar memória e encerrar programa */
 void liberar_memoria_menu() {
     /* <<< COMPLETE AQUI A IMPLEMENTAÇÃO >>> */
-    printf(ERRO_NAO_IMPLEMENTADO, "liberar_memoria_menu");
+    free(usuarios_idx);
+    free(jogos_idx);
+    free(compras_idx);
+    free(titulo_idx);
+    free(data_user_game_idx);
+    //printf(ERRO_NAO_IMPLEMENTADO, "liberar_memoria_menu");
 }
 
 

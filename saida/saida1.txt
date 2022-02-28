@@ -120,4 +120,3 @@ SELECT * FROM usuarios ORDER BY id_user ASC;
 66545678765;SnailThemi;mariaeugenia@gmail.com;***********;4815002008.12;########################################################99876556782;ezPz#Fireclan;ga.augusto@gmail.com;***********;0000000000.00;#######################################################44565434213;forninhocaiu;ge.santana@gmail.com;***********;0000000005.00;########################################################54654367865;batata_doce;galmeida@gmail.com;***********;0000000190.00;###########################################################
 
 \q
-ERRO: Funcao liberar_memoria_menu nao implementada
