@@ -908,7 +908,30 @@ Usuario recuperar_registro_usuario(int rrn) {
  * informado e retorna os dados na struct Jogo */
 Jogo recuperar_registro_jogo(int rrn) {
     /* <<< COMPLETE AQUI A IMPLEMENTAÇÃO >>> */
-    printf(ERRO_NAO_IMPLEMENTADO, "recuperar_registro_jogo");
+    Jogo j;
+    char temp[TAM_REGISTRO_JOGO + 1], *p;
+    strncpy(temp, ARQUIVO_JOGOS + (rrn * TAM_REGISTRO_JOGO), TAM_REGISTRO_JOGO);
+    temp[TAM_REGISTRO_JOGO] = '\0';
+
+    p = strtok(temp, ";");
+    strcpy(j.id_game, p);
+    p = strtok(NULL, ";");
+    strcpy(j.titulo, p);
+    p = strtok(NULL, ";");
+    strcpy(j.desenvolvedor, p);
+    p = strtok(NULL, ";");
+    strcpy(j.editora, p);
+    p = strtok(NULL, ";");
+    strcpy(j.data_lancamento, p);
+    p = strtok(NULL, ";");
+    j.preco = atof(p);
+    p = strtok(NULL, ";");
+    // strcpy("", p);
+    // p = strtok(NULL, ";");
+
+    return j;
+
+    //printf(ERRO_NAO_IMPLEMENTADO, "recuperar_registro_jogo");
 }
 
 /* Recupera do arquivo de compras o registro com o RRN
@@ -949,7 +972,31 @@ void escrever_registro_usuario(Usuario u, int rrn) {
  * os dados na struct Jogo */
 void escrever_registro_jogo(Jogo j, int rrn) {
     /* <<< COMPLETE AQUI A IMPLEMENTAÇÃO >>> */
-    printf(ERRO_NAO_IMPLEMENTADO, "escrever_registro_jogo");
+    char temp[TAM_REGISTRO_JOGO + 1], p[100];
+    temp[0] = '\0'; p[0] = '\0';
+
+    strcpy(temp, j.id_game);
+    strcat(temp, ";");
+    strcat(temp, j.titulo);
+    strcat(temp, ";");
+    strcat(temp, j.desenvolvedor);
+    strcat(temp, ";");
+    strcat(temp, j.editora);
+    strcat(temp, ";");
+    strcat(temp, j.data_lancamento);
+    strcat(temp, ";");
+    sprintf(p, "%013.2lf", j.preco);
+    strcat(temp, p);
+    strcat(temp, ";");
+    strcat(temp, "");
+    strcat(temp, ";");
+    
+    for (int i = strlen(temp); i < TAM_REGISTRO_JOGO; i++)
+        temp[i] = '#';
+
+    strncpy(ARQUIVO_JOGOS + rrn*TAM_REGISTRO_JOGO, temp, TAM_REGISTRO_JOGO);
+    ARQUIVO_JOGOS[qtd_registros_jogos*TAM_REGISTRO_JOGO] = '\0';
+    //printf(ERRO_NAO_IMPLEMENTADO, "escrever_registro_jogo");
 }
 
 /* Escreve no arquivo de compras na posição informada (RRN)
@@ -991,7 +1038,22 @@ void cadastrar_usuario_menu(char *id_user, char *username, char *email) {
 
 void cadastrar_celular_menu(char* id_user, char* celular) {
     /* <<< COMPLETE AQUI A IMPLEMENTAÇÃO >>> */
-    printf(ERRO_NAO_IMPLEMENTADO, "cadastrar_celular_menu");
+    usuarios_index *temp = (usuarios_index*)malloc(sizeof(usuarios_index));
+    strcpy(temp->id_user, id_user);
+    usuarios_index *aux = (usuarios_index*)busca_binaria(temp, usuarios_idx, qtd_registros_usuarios, sizeof(usuarios_index), qsort_usuarios_idx, false);
+    if(!aux){
+        printf(ERRO_REGISTRO_NAO_ENCONTRADO);
+        free(temp);
+        return;
+    }
+    Usuario u = recuperar_registro_usuario(aux->rrn);
+    strcpy(u.celular, celular);
+
+    escrever_registro_usuario(u, aux->rrn);
+
+    printf(SUCESSO);
+    free(temp);
+    //printf(ERRO_NAO_IMPLEMENTADO, "cadastrar_celular_menu");
 }
 
 void remover_usuario_menu(char *id_user) {
@@ -1001,7 +1063,40 @@ void remover_usuario_menu(char *id_user) {
 
 void cadastrar_jogo_menu(char *titulo, char *desenvolvedor, char *editora, char* lancamento, double preco) {
     /* <<< COMPLETE AQUI A IMPLEMENTAÇÃO >>> */
-    printf(ERRO_NAO_IMPLEMENTADO, "cadastrar_jogo_menu");
+    // jogos_index *temp = (jogos_index*)malloc(sizeof(jogos_index));
+    // strcpy(temp->id_game, titulo);
+    // jogos_index *aux = (jogos_index*)busca_binaria(temp, jogos_idx, qtd_registros_jogos, sizeof(jogos_index), qsort_jogos_idx, false);
+    titulos_index *temp = (titulos_index*)malloc(sizeof(titulos_index));
+    strcpy(temp->titulo, titulo);
+    titulos_index *aux = (titulos_index*)busca_binaria(temp, titulo_idx, qtd_registros_jogos, sizeof(titulos_index), qsort_titulo_idx, false);
+    if(aux){
+        printf(ERRO_PK_REPETIDA, titulo);
+        free(temp);
+        return;
+    }
+    Jogo j;
+    sprintf(j.id_game, "%.8u", qtd_registros_jogos);
+    strcpy(j.titulo, titulo);
+    strcpy(j.desenvolvedor, desenvolvedor);
+    strcpy(j.editora, editora);
+    strcpy(j.data_lancamento, lancamento);
+    j.preco = preco;
+
+    jogos_idx[qtd_registros_jogos+1].rrn = qtd_registros_jogos;
+    // titulo_idx[qtd_registros_jogos+1].id_game = qtd_registros_jogos;
+    // strcpy(titulo_idx[qtd_registros_jogos+1].id_game, qtd_registros_jogos);
+    // sprintf(titulo_idx[qtd_registros_jogos+1].id_game, "%.8u", qtd_registros_jogos);
+    // strcpy(titulo_idx[qtd_registros_jogos+1].titulo, titulo);
+    qtd_registros_jogos++;
+
+    escrever_registro_jogo(j, jogos_idx[qtd_registros_jogos].rrn);
+
+    criar_jogos_idx();
+    criar_titulo_idx();
+
+    printf(SUCESSO);
+    free(temp);
+    //printf(ERRO_NAO_IMPLEMENTADO, "cadastrar_jogo_menu");
 }
 
 void adicionar_saldo_menu(char *id_user, double valor) {
@@ -1023,7 +1118,7 @@ void adicionar_saldo_menu(char *id_user, double valor) {
     // for(int i = 0; i < qtd_registros_usuarios; i ++){
     //     printf("%s", usuarios_idx[i].id_user);
     //      if(usuarios_idx[i].id_user == id_user){
-    //          aux = usuarios_idx[i].rrn;
+    //          aux = usuarios_idx[i].rrn;_
     //          break;
     //      }
     // }
@@ -1194,6 +1289,8 @@ void liberar_memoria_menu() {
     free(compras_idx);
     free(titulo_idx);
     free(data_user_game_idx);
+    free(categorias_idx.categorias_secundario_idx);
+    free(categorias_idx.categorias_primario_idx);
     //printf(ERRO_NAO_IMPLEMENTADO, "liberar_memoria_menu");
 }
 
