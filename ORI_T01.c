@@ -937,7 +937,7 @@ void escrever_registro_usuario(Usuario u, int rrn) {
     sprintf(p, "%013.2lf", u.saldo);
     strcat(temp, p);
     strcat(temp, ";");
-
+    
     for (int i = strlen(temp); i < TAM_REGISTRO_USUARIO; i++)
         temp[i] = '#';
 
@@ -1008,27 +1008,28 @@ void adicionar_saldo_menu(char *id_user, double valor) {
         return;
     }
 
-    if(!busca_binaria(id_user, usuarios_idx, qtd_registros_usuarios, sizeof(usuarios_index), qsort_usuarios_idx, false)){
+    usuarios_index *temp = (usuarios_index*)malloc(sizeof(usuarios_index));
+    strcpy(temp->id_user, id_user);
+    usuarios_index *aux = (usuarios_index*)busca_binaria(temp, usuarios_idx, qtd_registros_usuarios, sizeof(usuarios_index), qsort_usuarios_idx, false);
+    if(!aux){
         printf(ERRO_REGISTRO_NAO_ENCONTRADO);
         return;
     }
 
-    int aux;
-    for(int i = 0; i < qtd_registros_usuarios; i ++){
-        printf("%s", usuarios_idx[i].id_user);
-         if(usuarios_idx[i].id_user == id_user){
-             aux = usuarios_idx[i].rrn;
-             break;
-         }
-    }
+    // for(int i = 0; i < qtd_registros_usuarios; i ++){
+    //     printf("%s", usuarios_idx[i].id_user);
+    //      if(usuarios_idx[i].id_user == id_user){
+    //          aux = usuarios_idx[i].rrn;
+    //          break;
+    //      }
+    // }
 
-    Usuario u = recuperar_registro_usuario(aux);
+    Usuario u = recuperar_registro_usuario(aux->rrn);
     u.saldo = u.saldo + valor;
 
-    escrever_registro_usuario(u, aux);
+    escrever_registro_usuario(u, aux->rrn);
 
     printf(SUCESSO);
-
     //printf(ERRO_NAO_IMPLEMENTADO, "adicionar_saldo_menu");
 }
 
