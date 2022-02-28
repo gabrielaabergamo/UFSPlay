@@ -1003,10 +1003,33 @@ void cadastrar_jogo_menu(char *titulo, char *desenvolvedor, char *editora, char*
 
 void adicionar_saldo_menu(char *id_user, double valor) {
     /* <<< COMPLETE AQUI A IMPLEMENTAÇÃO >>> */
+    if(valor <= 0){
+        printf(ERRO_VALOR_INVALIDO);
+        return;
+    }
 
+    if(!busca_binaria(id_user, usuarios_idx, qtd_registros_usuarios, sizeof(usuarios_index), qsort_usuarios_idx, false)){
+        printf(ERRO_REGISTRO_NAO_ENCONTRADO);
+        return;
+    }
 
+    int aux;
+    for(int i = 0; i < qtd_registros_usuarios; i ++){
+        printf("%s", usuarios_idx[i].id_user);
+         if(usuarios_idx[i].id_user == id_user){
+             aux = usuarios_idx[i].rrn;
+             break;
+         }
+    }
 
-    printf(ERRO_NAO_IMPLEMENTADO, "adicionar_saldo_menu");
+    Usuario u = recuperar_registro_usuario(aux);
+    u.saldo = u.saldo + valor;
+
+    escrever_registro_usuario(u, aux);
+
+    printf(SUCESSO);
+
+    //printf(ERRO_NAO_IMPLEMENTADO, "adicionar_saldo_menu");
 }
 
 void comprar_menu(char *id_user, char *titulo) {
