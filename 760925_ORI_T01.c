@@ -1147,12 +1147,38 @@ void cadastrar_categoria_menu(char* titulo, char* categoria) {
 /* Busca */
 void buscar_usuario_id_user_menu(char *id_user) {
     /* <<< COMPLETE AQUI A IMPLEMENTAÇÃO >>> */
-    printf(ERRO_NAO_IMPLEMENTADO, "buscar_usuario_id_user_menu");
+    usuarios_index *temp = (usuarios_index*)malloc(sizeof(usuarios_index));
+    strcpy(temp->id_user, id_user);
+    printf("Registros percorridos:");
+    usuarios_index *aux = (usuarios_index*)busca_binaria(temp, usuarios_idx, qtd_registros_usuarios, sizeof(usuarios_index), qsort_usuarios_idx, true);
+    printf("\n");
+    if(!aux){
+        printf(ERRO_REGISTRO_NAO_ENCONTRADO);
+        free(temp);
+        return;
+    }
+
+    Usuario u = recuperar_registro_usuario(aux->rrn);
+    printf("%s, %s, %s, %s, %.2f\n", u.id_user, u.username, u.email, u.celular, u.saldo);
+    //printf(ERRO_NAO_IMPLEMENTADO, "buscar_usuario_id_user_menu");
 }
 
 void buscar_jogo_id_menu(char *id_game) {
     /* <<< COMPLETE AQUI A IMPLEMENTAÇÃO >>> */
-    printf(ERRO_NAO_IMPLEMENTADO, "buscar_jogo_id_menu");
+    jogos_index *temp = (jogos_index*)malloc(sizeof(jogos_index));
+    strcpy(temp->id_game, id_game);
+    printf("Registros percorridos:");
+    jogos_index *aux = (jogos_index*)busca_binaria(temp, jogos_idx, qtd_registros_jogos, sizeof(jogos_index), qsort_jogos_idx, true);
+    printf("\n");
+    if(!aux){
+        printf(ERRO_REGISTRO_NAO_ENCONTRADO);
+        free(temp);
+        return;
+    }
+    Jogo j = recuperar_registro_jogo(aux->rrn);
+    printf("%s, %s, %s, %s, %s, %.2f\n", j.id_game, j.titulo, j.desenvolvedor, j.editora, j.data_lancamento, j.preco);
+
+    //printf(ERRO_NAO_IMPLEMENTADO, "buscar_jogo_id_menu");
 }
 
 void buscar_jogo_titulo_menu(char *titulo) {
@@ -1317,7 +1343,7 @@ int qsort_compras_idx(const void *a, const void *b) {
 /* Função de comparação entre chaves do índice titulo_idx */
 int qsort_titulo_idx(const void *a, const void *b) {
     /* <<< COMPLETE AQUI A IMPLEMENTAÇÃO >>> */
-     return (strcmp( ( (titulos_index *)a )->titulo, ( (titulos_index *)b )->titulo) && strcmp( ( (titulos_index *)a )->id_game, ( (titulos_index *)b )->id_game));
+     return (strcmp( ( (titulos_index *)a )->titulo, ( (titulos_index *)b )->titulo));
     //printf(ERRO_NAO_IMPLEMENTADO, "qsort_titulo_idx");
 }
 
@@ -1386,16 +1412,14 @@ void* busca_binaria(const void *key, const void *base0, size_t nmemb, size_t siz
         while (imin < imax)
             {
                 imid = (imin + imax) / 2;
-                printf("%s", (char*)imid);
+                printf(" %zu", imid);
                 p = (void *) (((const char *) base0) + (imid * size));
                 comp = (*compar) (key, p);
                 if (comp < 0){
                     imax = imid;
-                    printf("%s", (char*)imax);
                 }  
                 else if (comp > 0){
                     imin = imid + 1;
-                    printf("%s", (char*)imin);
                 }
                 else{
                     return (void *) p;
