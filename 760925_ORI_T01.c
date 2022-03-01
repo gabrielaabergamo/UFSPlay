@@ -1050,6 +1050,7 @@ void cadastrar_celular_menu(char* id_user, char* celular) {
     strcpy(u.celular, celular);
 
     escrever_registro_usuario(u, aux->rrn);
+    criar_usuarios_idx();
 
     printf(SUCESSO);
     free(temp);
@@ -1058,7 +1059,24 @@ void cadastrar_celular_menu(char* id_user, char* celular) {
 
 void remover_usuario_menu(char *id_user) {
     /* <<< COMPLETE AQUI A IMPLEMENTAÇÃO >>> */
-    printf(ERRO_NAO_IMPLEMENTADO, "remover_usuario_menu");
+    usuarios_index *temp = (usuarios_index*)malloc(sizeof(usuarios_index));
+    strcpy(temp->id_user, id_user);
+    usuarios_index *aux = (usuarios_index*)busca_binaria(temp, usuarios_idx, qtd_registros_usuarios, sizeof(usuarios_index), qsort_usuarios_idx, false);
+    if(!aux){
+        printf(ERRO_REGISTRO_NAO_ENCONTRADO);
+        free(temp);
+        return;
+    }
+    Usuario u = recuperar_registro_usuario(aux->rrn);
+    strncpy(u.id_user, "*|", 2);
+
+
+    escrever_registro_usuario(u, aux->rrn);
+    criar_usuarios_idx();
+
+    printf(SUCESSO);
+    free(temp);
+    //printf(ERRO_NAO_IMPLEMENTADO, "remover_usuario_menu");
 }
 
 void cadastrar_jogo_menu(char *titulo, char *desenvolvedor, char *editora, char* lancamento, double preco) {
@@ -1218,6 +1236,9 @@ void listar_compras_periodo_menu(char *data_inicio, char *data_fim) {
 /* Liberar espaço */
 void liberar_espaco_menu() {
     /* <<< COMPLETE AQUI A IMPLEMENTAÇÃO >>> */
+    //ARQUIVO_USUARIOS[qtd_registros_usuarios*TAM_REGISTRO_USUARIO]
+   
+    
     printf(ERRO_NAO_IMPLEMENTADO, "liberar_espaco_menu");
 }
 
