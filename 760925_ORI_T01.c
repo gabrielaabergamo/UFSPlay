@@ -1059,23 +1059,27 @@ void cadastrar_celular_menu(char* id_user, char* celular) {
 
 void remover_usuario_menu(char *id_user) {
     /* <<< COMPLETE AQUI A IMPLEMENTAÇÃO >>> */
-    usuarios_index *temp = (usuarios_index*)malloc(sizeof(usuarios_index));
-    strcpy(temp->id_user, id_user);
-    usuarios_index *aux = (usuarios_index*)busca_binaria(temp, usuarios_idx, qtd_registros_usuarios, sizeof(usuarios_index), qsort_usuarios_idx, false);
-    if(!aux){
+    // usuarios_index *temp = (usuarios_index*)malloc(sizeof(usuarios_index));
+    // strcpy(temp->id_user, id_user);
+    usuarios_index index;
+    strcpy(index.id_user, id_user);
+    
+    usuarios_index *aux = busca_binaria((void*)&index, usuarios_idx, qtd_registros_usuarios, sizeof(usuarios_index), qsort_usuarios_idx, false);
+    if(!aux || aux->rrn == -1){
         printf(ERRO_REGISTRO_NAO_ENCONTRADO);
-        free(temp);
+        // free(temp);
         return;
     }
     Usuario u = recuperar_registro_usuario(aux->rrn);
-    strncpy(u.id_user, "*|", 2);
-
+    // strncpy(u.id_user, "*|", 2);
+    u.id_user[0] = '*';
+    u.id_user[1] = '|';
 
     escrever_registro_usuario(u, aux->rrn);
-    criar_usuarios_idx();
+    aux->rrn = -1;
 
     printf(SUCESSO);
-    free(temp);
+    // free(temp);
     //printf(ERRO_NAO_IMPLEMENTADO, "remover_usuario_menu");
 }
 
@@ -1237,7 +1241,9 @@ void listar_compras_periodo_menu(char *data_inicio, char *data_fim) {
 void liberar_espaco_menu() {
     /* <<< COMPLETE AQUI A IMPLEMENTAÇÃO >>> */
     //ARQUIVO_USUARIOS[qtd_registros_usuarios*TAM_REGISTRO_USUARIO]
-   
+   for(int i = 0; i < (qtd_registros_usuarios * TAM_REGISTRO_USUARIO); i++){
+       printf("%c", ARQUIVO_USUARIOS[i]);
+   }
     
     printf(ERRO_NAO_IMPLEMENTADO, "liberar_espaco_menu");
 }
