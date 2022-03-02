@@ -1291,7 +1291,18 @@ void buscar_jogo_id_menu(char *id_game) {
 
 void buscar_jogo_titulo_menu(char *titulo) {
     /* <<< COMPLETE AQUI A IMPLEMENTAÇÃO >>> */
-    printf(ERRO_NAO_IMPLEMENTADO, "buscar_jogo_titulo_menu");
+    titulos_index temp;
+    strcpy(temp.titulo, titulo);
+    printf(REGS_PERCORRIDOS);
+    titulos_index *aux = busca_binaria((void*)&temp, titulo_idx, qtd_registros_jogos, sizeof(titulos_index), qsort_titulo_idx, true);
+    printf("\n");
+    if(!aux){
+        printf(ERRO_REGISTRO_NAO_ENCONTRADO);
+        return;
+    }
+
+    buscar_jogo_id_menu(aux->id_game);  
+    //printf(ERRO_NAO_IMPLEMENTADO, "buscar_jogo_titulo_menu");
 }
 
 
@@ -1319,7 +1330,49 @@ void listar_jogos_categorias_menu(char *categoria) {
 
 void listar_compras_periodo_menu(char *data_inicio, char *data_fim) {
     /* <<< COMPLETE AQUI A IMPLEMENTAÇÃO >>> */
-    printf(ERRO_NAO_IMPLEMENTADO, "listar_compras_periodo_menu");
+    
+    data_user_game_index temp_ini;
+    strcpy(temp_ini.data, data_inicio);
+    data_user_game_index *aux_ini = busca_binaria_teto((void*)&temp_ini, data_user_game_idx, qtd_registros_compras, sizeof(data_user_game_index), qsort_data_user_game_idx);
+    if(!aux_ini){
+        printf(AVISO_NENHUM_REGISTRO_ENCONTRADO);
+        return;
+    }
+
+    data_user_game_index temp_fim;
+    strcpy(temp_fim.data, data_fim);
+    data_user_game_index *aux_fim = busca_binaria_piso((void*)&temp_fim, data_user_game_idx, qtd_registros_compras, sizeof(data_user_game_index), qsort_data_user_game_idx);
+    if(!aux_fim){
+        printf(AVISO_NENHUM_REGISTRO_ENCONTRADO);
+        return;
+    }
+    // printf("%s %s\n", data_fim, aux_fim->data);
+    for(int i = 0; i < qtd_registros_compras; i++){
+        if(strcmp(data_user_game_idx[i].data, aux_ini->data) >= 0 && strcmp(data_user_game_idx[i].data, aux_fim->data) <= 0){
+            compras_index temp_compra;
+            strcpy(temp_compra.id_user, data_user_game_idx[i].id_user);
+            strcpy(temp_compra.id_game, data_user_game_idx[i].id_game);
+            printf(REGS_PERCORRIDOS);
+            compras_index *aux_compras = busca_binaria((void*)&temp_compra, compras_idx, qtd_registros_compras, sizeof(compras_index), qsort_compras_idx, true);
+            printf("\n");
+            exibir_compra(aux_compras->rrn);
+        }
+    }
+
+    // for(int i = aux_ini->data; i <= aux_fim->data; i++){
+    //     data_user_game_index temp;
+    //     strcpy(temp.data, i);
+    //     data_user_game_index *aux_user = busca_binaria((void*)&temp, data_user_game_idx, qtd_registros_compras, sizeof(data_user_game_index), qsort_data_user_game_idx, true);
+
+
+    //     compras_index temp_compra;
+    //     strcpy(temp_compra.id_user, aux_user->id_user);
+    //     compras_index *aux_compra = busca_binaria((void*)temp_compra,compras_idx, qtd_registros_compras, sizeof(compras_index), qsort_compras_idx, true);
+    //     if(aux_compra){
+    //         exibir_compra(aux_compra->rrn);
+    //     }
+    // }
+    //printf(ERRO_NAO_IMPLEMENTADO, "listar_compras_periodo_menu");
 }
 
 
@@ -1485,7 +1538,23 @@ int qsort_data_idx(const void *a, const void *b) {
 
 int qsort_data_user_game_idx(const void *a, const void *b) {
     /* <<< COMPLETE AQUI A IMPLEMENTAÇÃO >>> */
-    return strcmp( ( (data_user_game_index *)a )->id_user, ( (data_user_game_index *)b )->id_user);
+    int aux_user = strcmp( ( (data_user_game_index *)a )->id_user, ( (data_user_game_index *)b )->id_user);
+    int aux_data = strcmp( ( (data_user_game_index *)a )->data, ( (data_user_game_index *)b )->data);
+    // if(!aux_user){
+    //     if(!aux_data){
+    //         return strcmp( ( (data_user_game_index *)a )->id_game, ( (data_user_game_index *)b )->id_game);
+    //     }
+    //     return aux_data;
+    // }
+    // return aux_user;
+
+    if(!aux_data){
+        if(!aux_user){
+            return strcmp( ( (data_user_game_index *)a )->id_game, ( (data_user_game_index *)b )->id_game);
+        }
+        return(aux_user);
+    }
+    return(aux_data);
     //printf(ERRO_NAO_IMPLEMENTADO, "qsort_data_user_game_idx");
 }
 
@@ -1585,22 +1654,24 @@ void* busca_binaria_piso(const void* key, void* base, size_t num, size_t size, i
     int comp;
     imin = 0;
     imax = num;
+    const void *retorno = NULL;
     while (imin < imax)
         {
             imid = (imin + imax) / 2;
             p = (void *) (((const char *) base) + (imid * size));
             comp = (*compar) (key, p);
-            if (comp < 0)
+            if (comp < 0){
                 imax = imid;
-            else if (comp > 0)
-                imin = imid + 1;
-            else{
-                if(imid - 1 >= 0)
-                return (void *) (((const char *) base) + ((imid-1) * size));
             }
+            else if (comp > 0){
+                retorno = p;
+                imin = imid + 1;
+            }
+            else
+                return (void *) p;
                 
         }
-    return NULL;
+    return (void *)retorno;
     //problema: imid = 0 -> imid-1??
     //printf(ERRO_NAO_IMPLEMENTADO, "busca_binaria_piso");
 }
@@ -1613,23 +1684,22 @@ void* busca_binaria_teto(const void* key, void* base, size_t num, size_t size, i
     int comp;
     imin = 0;
     imax = num;
+    const void *retorno = NULL;
     while (imin < imax)
         {
             imid = (imin + imax) / 2;
             p = (void *) (((const char *) base) + (imid * size));
             comp = (*compar) (key, p);
-            if (comp < 0)
+            if (comp < 0){
+                retorno = p;
                 imax = imid;
+            }
             else if (comp > 0)
                 imin = imid + 1;
-            else{
-                if(imid + 1 < num)
-                return (void *) (((const char *) base) + ((imid+1) * size));
-            }
-
+            else
+                return (void *) p;
                 
         }
-    return NULL;
-
+    return (void*)retorno;
     //printf(ERRO_NAO_IMPLEMENTADO, "busca_binaria_teto");
 }
