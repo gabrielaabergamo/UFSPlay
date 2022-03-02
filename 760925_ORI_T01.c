@@ -686,7 +686,7 @@ void criar_usuarios_idx() {
 void criar_jogos_idx() {
     /* <<< COMPLETE AQUI A IMPLEMENTAÇÃO >>> */
     if (!jogos_idx)
-        jogos_idx = malloc(MAX_REGISTROS * sizeof(jogos_idx));
+        jogos_idx = malloc(MAX_REGISTROS * sizeof(jogos_index));
 
     if (!jogos_idx) {
         printf(ERRO_MEMORIA_INSUFICIENTE);
@@ -719,7 +719,7 @@ void criar_compras_idx() {
     //     criar_usuarios_idx();
 
     if(!compras_idx)
-        compras_idx= malloc(MAX_REGISTROS * sizeof(compras_idx));  
+        compras_idx= malloc(MAX_REGISTROS * sizeof(compras_index));  
 
     if (!compras_idx) {
         printf(ERRO_MEMORIA_INSUFICIENTE);
@@ -747,7 +747,7 @@ void criar_compras_idx() {
 void criar_titulo_idx() {
     /* <<< COMPLETE AQUI A IMPLEMENTAÇÃO >>> */
     if(!titulo_idx)
-    titulo_idx= malloc(MAX_REGISTROS * sizeof(titulo_idx));  
+    titulo_idx= malloc(MAX_REGISTROS * sizeof(titulos_index));  
 
     if (!titulo_idx) {
         printf(ERRO_MEMORIA_INSUFICIENTE);
@@ -772,7 +772,7 @@ void criar_data_user_game_idx() {
     /* <<< COMPLETE AQUI A IMPLEMENTAÇÃO >>> */ 
 
     if(!data_user_game_idx)
-        data_user_game_idx= malloc(MAX_REGISTROS * sizeof(data_user_game_idx));  
+        data_user_game_idx= malloc(MAX_REGISTROS * sizeof(data_user_game_index));  
 
     if (!data_user_game_idx) {
         printf(ERRO_MEMORIA_INSUFICIENTE);
@@ -938,8 +938,21 @@ Jogo recuperar_registro_jogo(int rrn) {
  * informado e retorna os dados na struct Compra */
 Compra recuperar_registro_compra(int rrn) {     
     /* <<< COMPLETE AQUI A IMPLEMENTAÇÃO >>> */
+    Compra c;
+    char temp[TAM_REGISTRO_COMPRA + 1];
+    strncpy(temp, ARQUIVO_COMPRAS + (rrn * TAM_REGISTRO_COMPRA), TAM_REGISTRO_COMPRA);
+    //temp[TAM_REGISTRO_COMPRA] = '\0';
 
-    printf(ERRO_NAO_IMPLEMENTADO, "recuperar_registro_compra");
+    strncpy(c.id_user_dono, temp, TAM_ID_USER);
+    c.id_user_dono[TAM_ID_USER-1]= '\0';
+    strncpy(c.data_compra, temp+TAM_ID_USER-1, TAM_DATE);
+    c.data_compra[TAM_DATE-1] = '\0';
+    strncpy(c.id_game, temp+TAM_ID_USER+TAM_DATE-2, TAM_ID_GAME);
+    c.id_game[TAM_ID_GAME-1] = '\0';
+
+    return c;
+
+    //printf(ERRO_NAO_IMPLEMENTADO, "recuperar_registro_compra");
 }
 
 
@@ -1003,7 +1016,18 @@ void escrever_registro_jogo(Jogo j, int rrn) {
  * os dados na struct Compra */
 void escrever_registro_compra(Compra c, int rrn) {
     /* <<< COMPLETE AQUI A IMPLEMENTAÇÃO >>> */
-    printf(ERRO_NAO_IMPLEMENTADO, "escrever_registro_compra");
+    char temp[TAM_REGISTRO_COMPRA + 1];
+    temp[0] = '\0'; 
+
+    strcpy(temp, c.id_user_dono);
+    strcat(temp, c.data_compra);
+    strcat(temp, c.id_game);
+    
+
+    strncpy(ARQUIVO_COMPRAS + rrn*TAM_REGISTRO_COMPRA, temp, TAM_REGISTRO_COMPRA);
+    ARQUIVO_COMPRAS[qtd_registros_compras*TAM_REGISTRO_COMPRA] = '\0';
+
+    //printf(ERRO_NAO_IMPLEMENTADO, "escrever_registro_compra");
 }
 
 
@@ -1026,13 +1050,12 @@ void cadastrar_usuario_menu(char *id_user, char *username, char *email) {
 
     usuarios_idx[qtd_registros_usuarios+1].rrn= qtd_registros_usuarios;
     qtd_registros_usuarios++;
-
+   
     escrever_registro_usuario(u, usuarios_idx[qtd_registros_usuarios].rrn);
 
     criar_usuarios_idx();
 
     printf(SUCESSO);
-    // free(temp);
     //printf(ERRO_NAO_IMPLEMENTADO, "cadastrar_usuario_menu");
 }
 
@@ -1157,29 +1180,72 @@ void adicionar_saldo_menu(char *id_user, double valor) {
 
 void comprar_menu(char *id_user, char *titulo) {
     /* <<< COMPLETE AQUI A IMPLEMENTAÇÃO >>> */
-    usuarios_index temp;
-    strcpy(temp.id_user, id_user);
-    usuarios_index *aux = busca_binaria((void*)&temp, usuarios_idx, qtd_registros_usuarios, sizeof(usuarios_index), qsort_usuarios_idx, false);
-    if(aux){
-        printf(ERRO_PK_REPETIDA, id_user);
+    usuarios_index tempU;
+    strcpy(tempU.id_user, id_user);
+    usuarios_index *aux = busca_binaria((void*)&tempU, usuarios_idx, qtd_registros_usuarios, sizeof(usuarios_index), qsort_usuarios_idx, false);
+    if(!aux || aux->rrn == -1){
+        printf(ERRO_REGISTRO_NAO_ENCONTRADO);
         return;
     }
-    Usuario u;
-    strcpy(u.id_user, id_user);
-    strcpy(u.username, username);
-    strcpy(u.email, email);
-    strcpy(u.celular, "***********");
-    u.saldo = 0;
 
-    usuarios_idx[qtd_registros_usuarios+1].rrn= qtd_registros_usuarios;
-    qtd_registros_usuarios++;
+    titulos_index tempT;
+    strcpy(tempT.titulo, titulo);
+    titulos_index *aux_titulo = busca_binaria((void*)&tempT, titulo_idx, qtd_registros_jogos, sizeof(titulos_index), qsort_titulo_idx, false);
+    if(!aux_titulo){
+        printf(ERRO_REGISTRO_NAO_ENCONTRADO);
+        return;
+    }
 
-    escrever_registro_usuario(u, usuarios_idx[qtd_registros_usuarios].rrn);
+    jogos_index tempJ;
+    strcpy(tempJ.id_game, aux_titulo->id_game);
+    jogos_index *aux_jogos = busca_binaria((void*)&tempJ, jogos_idx, qtd_registros_jogos, sizeof(jogos_index), qsort_jogos_idx, false);
+    if(!aux_jogos){
+        printf(ERRO_REGISTRO_NAO_ENCONTRADO);
+        return;
+    }
 
-    criar_usuarios_idx();
+    compras_index tempC;
+    strcpy(tempC.id_user, id_user);
+    strcpy(tempC.id_game, aux_jogos->id_game);
+    compras_index *aux_compras = busca_binaria((void*)&tempC, compras_idx, qtd_registros_compras, sizeof(compras_index), qsort_compras_idx, false);
+    if(aux_compras){
+        char *aux_id = malloc(TAM_CHAVE_COMPRAS_IDX * sizeof(char));
+        strcpy(aux_id, id_user);
+        strcat(aux_id, aux_jogos->id_game);
+        printf(ERRO_PK_REPETIDA, aux_id);
+        free(aux_id);
+        return;
+    }
+
+    Usuario u = recuperar_registro_usuario(aux->rrn);
+    Jogo j = recuperar_registro_jogo(aux_jogos->rrn);
+    if( j.preco > u.saldo ){
+        printf(ERRO_SALDO_NAO_SUFICIENTE);
+        return;
+    }
+
+    Compra c;
+    char timestamp[TAM_DATE];
+    current_date(timestamp);
+    
+    strcpy(c.id_user_dono, id_user);
+    strcpy(c.id_game, aux_jogos->id_game);
+    strcpy(c.data_compra, timestamp);
+
+
+    compras_idx[qtd_registros_compras+1].rrn = qtd_registros_compras;
+    qtd_registros_compras++;
+
+    escrever_registro_compra(c, compras_idx[qtd_registros_compras].rrn);
+
+    criar_compras_idx();
+
+    u.saldo = u.saldo - j.preco;
+    escrever_registro_usuario(u, aux->rrn);
+
+    criar_data_user_game_idx();
 
     printf(SUCESSO);
-    printf(ERRO_NAO_IMPLEMENTADO, "comprar_menu");
 }
 
 void cadastrar_categoria_menu(char* titulo, char* categoria) {
@@ -1395,7 +1461,11 @@ int qsort_jogos_idx(const void *a, const void *b) {
 /* Função de comparação entre chaves do índice compras_idx */
 int qsort_compras_idx(const void *a, const void *b) {
     /* <<< COMPLETE AQUI A IMPLEMENTAÇÃO >>> */
-    return (strcmp( ( (compras_index *)a )->id_user, ( (compras_index *)b )->id_user) && strcmp( ( (compras_index *)a )->id_game, ( (compras_index *)b )->id_game));
+    int aux = strcmp( ( (compras_index *)a )->id_user, ( (compras_index *)b )->id_user);
+    if(!aux){
+        return(strcmp( ( (compras_index *)a )->id_game, ( (compras_index *)b )->id_game));
+    }
+    return (aux);
    // printf(ERRO_NAO_IMPLEMENTADO, "qsort_compras_idx");
 }
 
