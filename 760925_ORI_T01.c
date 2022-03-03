@@ -1386,15 +1386,17 @@ void liberar_espaco_menu() {
         // printf("%d\n", strncmp(&ARQUIVO_USUARIOS[i], "*|", 2));
         if(strncmp(&ARQUIVO_USUARIOS[i], "*|", 2) == 0){
             // printf("%c %c\n", ARQUIVO_USUARIOS[i], ARQUIVO_USUARIOS[i + 1]);
+            int w = i;
             for(int j = i + TAM_REGISTRO_USUARIO; j < (qtd_registros_usuarios * TAM_REGISTRO_USUARIO); j++){
-                memmove(&ARQUIVO_USUARIOS[i], &ARQUIVO_USUARIOS[j], TAM_REGISTRO_USUARIO);
+                memmove(&ARQUIVO_USUARIOS[w], &ARQUIVO_USUARIOS[j], TAM_REGISTRO_USUARIO);
+                w++;
             }
+            aux++;
         }
-        aux++;
     }
-    
+    qtd_registros_usuarios = qtd_registros_usuarios - aux;
+    criar_usuarios_idx();
     // qtd_registros_usuarios = qtd_registros_usuarios - aux;
-    // criar_usuarios_idx();
     printf(SUCESSO);
     //printf(ERRO_NAO_IMPLEMENTADO, "liberar_espaco_menu");
 }

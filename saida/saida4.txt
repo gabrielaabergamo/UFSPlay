@@ -109,14 +109,16 @@ SELECT * FROM usuarios ORDER BY id_user ASC;
 VACUUM usuarios;
 OK
 \echo file ARQUIVO_USUARIOS
-ERRO: Arquivo vazio
+66545678765;SnailThemi;mariaeugenia@gmail.com;***********;9630004016.24;########################################################99876556782;ezPz#Fireclan;ga.augusto@gmail.com;***********;0000000000.00;#######################################################54654367865;batata_doce;galmeida@gmail.com;***********;0000000380.33;###########################################################
 
 -- remoção de usuário inexistente
 DELETE FROM usuarios WHERE id_user = '00000000000';
 ERRO: Registro nao encontrado
 \echo file ARQUIVO_USUARIOS
-ERRO: Arquivo vazio
+66545678765;SnailThemi;mariaeugenia@gmail.com;***********;9630004016.24;########################################################99876556782;ezPz#Fireclan;ga.augusto@gmail.com;***********;0000000000.00;#######################################################54654367865;batata_doce;galmeida@gmail.com;***********;0000000380.33;###########################################################
 SELECT * FROM usuarios ORDER BY id_user ASC;
-AVISO: Nenhum registro encontrado
+54654367865, batata_doce, galmeida@gmail.com, ***********, 380.33
+66545678765, SnailThemi, mariaeugenia@gmail.com, ***********, 9630004016.24
+99876556782, ezPz#Fireclan, ga.augusto@gmail.com, ***********, 0.00
 
 \q
