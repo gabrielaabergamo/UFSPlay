@@ -1048,12 +1048,14 @@ void cadastrar_usuario_menu(char *id_user, char *username, char *email) {
     strcpy(u.celular, "***********");
     u.saldo = 0;
 
-    usuarios_idx[qtd_registros_usuarios+1].rrn= qtd_registros_usuarios;
+    usuarios_idx[qtd_registros_usuarios].rrn= qtd_registros_usuarios;
+    strcpy(usuarios_idx[qtd_registros_usuarios].id_user, id_user);
     qtd_registros_usuarios++;
-   
-    escrever_registro_usuario(u, usuarios_idx[qtd_registros_usuarios].rrn);
-
-    criar_usuarios_idx();
+    escrever_registro_usuario(u, usuarios_idx[qtd_registros_usuarios-1].rrn);
+    
+    qsort(usuarios_idx, qtd_registros_usuarios, sizeof(usuarios_index), qsort_usuarios_idx);
+    
+    // criar_usuarios_idx();
 
     printf(SUCESSO);
     //printf(ERRO_NAO_IMPLEMENTADO, "cadastrar_usuario_menu");
@@ -1073,7 +1075,9 @@ void cadastrar_celular_menu(char* id_user, char* celular) {
     strcpy(u.celular, celular);
 
     escrever_registro_usuario(u, aux->rrn);
-    criar_usuarios_idx();
+
+    qsort(usuarios_idx, qtd_registros_usuarios, sizeof(usuarios_index), qsort_usuarios_idx);
+    // criar_usuarios_idx();
 
     printf(SUCESSO);
     // free(temp);
@@ -1127,20 +1131,22 @@ void cadastrar_jogo_menu(char *titulo, char *desenvolvedor, char *editora, char*
     strcpy(j.data_lancamento, lancamento);
     j.preco = preco;
 
-    jogos_idx[qtd_registros_jogos+1].rrn = qtd_registros_jogos;
-    // titulo_idx[qtd_registros_jogos+1].id_game = qtd_registros_jogos;
-    // strcpy(titulo_idx[qtd_registros_jogos+1].id_game, qtd_registros_jogos);
-    // sprintf(titulo_idx[qtd_registros_jogos+1].id_game, "%.8u", qtd_registros_jogos);
-    // strcpy(titulo_idx[qtd_registros_jogos+1].titulo, titulo);
+    jogos_idx[qtd_registros_jogos].rrn = qtd_registros_jogos;
+    sprintf(jogos_idx[qtd_registros_jogos].id_game, "%.8u", qtd_registros_jogos);
+
+    sprintf(titulo_idx[qtd_registros_jogos].id_game, "%.8u", qtd_registros_jogos);
+    strcpy(titulo_idx[qtd_registros_jogos].titulo, titulo);
+
     qtd_registros_jogos++;
+    escrever_registro_jogo(j, jogos_idx[qtd_registros_jogos-1].rrn);
 
-    escrever_registro_jogo(j, jogos_idx[qtd_registros_jogos].rrn);
-
-    criar_jogos_idx();
-    criar_titulo_idx();
+    qsort(jogos_idx, qtd_registros_jogos, sizeof(jogos_index), qsort_jogos_idx);
+    qsort(titulo_idx, qtd_registros_jogos, sizeof(titulos_index), qsort_titulo_idx);
+    
+    // criar_jogos_idx();
+    // criar_titulo_idx();
 
     printf(SUCESSO);
-    // free(temp);
     //printf(ERRO_NAO_IMPLEMENTADO, "cadastrar_jogo_menu");
 }
 
@@ -1333,7 +1339,7 @@ void listar_compras_periodo_menu(char *data_inicio, char *data_fim) {
     
     data_user_game_index temp_ini;
     strcpy(temp_ini.data, data_inicio);
-    data_user_game_index *aux_ini = busca_binaria_teto((void*)&temp_ini, data_user_game_idx, qtd_registros_compras, sizeof(data_user_game_index), qsort_data_user_game_idx);
+    data_user_game_index *aux_ini = busca_binaria_teto((void*)&temp_ini, data_user_game_idx, qtd_registros_compras, sizeof(data_user_game_index), qsort_data_idx);
     if(!aux_ini){
         printf(AVISO_NENHUM_REGISTRO_ENCONTRADO);
         return;
@@ -1341,7 +1347,7 @@ void listar_compras_periodo_menu(char *data_inicio, char *data_fim) {
 
     data_user_game_index temp_fim;
     strcpy(temp_fim.data, data_fim);
-    data_user_game_index *aux_fim = busca_binaria_piso((void*)&temp_fim, data_user_game_idx, qtd_registros_compras, sizeof(data_user_game_index), qsort_data_user_game_idx);
+    data_user_game_index *aux_fim = busca_binaria_piso((void*)&temp_fim, data_user_game_idx, qtd_registros_compras, sizeof(data_user_game_index), qsort_data_idx);
     if(!aux_fim){
         printf(AVISO_NENHUM_REGISTRO_ENCONTRADO);
         return;
@@ -1382,21 +1388,20 @@ void liberar_espaco_menu() {
     //ARQUIVO_USUARIOS[qtd_registros_usuarios*TAM_REGISTRO_USUARIO]
     int aux = 0;
     for(int i = 0; i < (qtd_registros_usuarios * TAM_REGISTRO_USUARIO); i = (i + TAM_REGISTRO_USUARIO)){
-        //    printf("%c\n", ARQUIVO_USUARIOS[i]);
-        // printf("%d\n", strncmp(&ARQUIVO_USUARIOS[i], "*|", 2));
         if(strncmp(&ARQUIVO_USUARIOS[i], "*|", 2) == 0){
-            // printf("%c %c\n", ARQUIVO_USUARIOS[i], ARQUIVO_USUARIOS[i + 1]);
             int w = i;
             for(int j = i + TAM_REGISTRO_USUARIO; j < (qtd_registros_usuarios * TAM_REGISTRO_USUARIO); j++){
                 memmove(&ARQUIVO_USUARIOS[w], &ARQUIVO_USUARIOS[j], TAM_REGISTRO_USUARIO);
                 w++;
             }
             aux++;
+            i = i - TAM_REGISTRO_USUARIO;
         }
     }
+
     qtd_registros_usuarios = qtd_registros_usuarios - aux;
     criar_usuarios_idx();
-    // qtd_registros_usuarios = qtd_registros_usuarios - aux;
+    
     printf(SUCESSO);
     //printf(ERRO_NAO_IMPLEMENTADO, "liberar_espaco_menu");
 }

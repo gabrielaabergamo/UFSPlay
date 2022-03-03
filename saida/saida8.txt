@@ -200,6 +200,6 @@ SELECT * FROM usuarios ORDER BY id_user ASC;
 VACUUM usuarios;
 OK
 \echo file ARQUIVO_USUARIOS
-*|876556782;ezPz#Fireclan;ga.augusto@gmail.com;***********;0000000000.00;#######################################################*|654367865;batata_doce;galmeida@gmail.com;***********;0000001250.80;###########################################################*|565436782;melange;melissa@gmail.com;***********;0000000250.00;################################################################*|155476035;JSantos;jose.santos@hotmail.com;***********;0000000000.00;##########################################################
+ERRO: Arquivo vazio
 
 \q
