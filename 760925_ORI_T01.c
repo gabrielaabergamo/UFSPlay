@@ -763,7 +763,6 @@ void criar_titulo_idx() {
         }  
     }
     qsort(titulo_idx, qtd_registros_jogos, sizeof(titulos_index), qsort_titulo_idx);    
-
     // printf(ERRO_NAO_IMPLEMENTADO, "criar_titulo_idx");
 }
 
@@ -798,51 +797,34 @@ void criar_data_user_game_idx() {
 void criar_categorias_idx() {
     /* <<< COMPLETE AQUI A IMPLEMENTAÇÃO >>> */
     /*inicializar lista*/
-    // if(!categorias_idx.categorias_primario_idx)
-    // categorias_idx.categorias_primario_idx = (categorias_primario_index*)malloc(sizeof(categorias_primario_index));
+    if(!categorias_idx.categorias_primario_idx)
+    categorias_idx.categorias_primario_idx = (categorias_primario_index*)malloc(MAX_REGISTROS * sizeof(categorias_primario_index));
 
-    // if (!categorias_idx.categorias_primario_idx) {
-    //     printf(ERRO_MEMORIA_INSUFICIENTE);
-    //     exit(1);
-    // } 
+    if (!categorias_idx.categorias_primario_idx) {
+        printf(ERRO_MEMORIA_INSUFICIENTE);
+        exit(1);
+    } 
 
-    // if(!categorias_idx.categorias_secundario_idx)
-    // categorias_idx.categorias_secundario_idx = (categorias_secundario_index*)malloc(sizeof(categorias_secundario_index));
+    if(!categorias_idx.categorias_secundario_idx)
+    categorias_idx.categorias_secundario_idx = (categorias_secundario_index*)malloc(MAX_REGISTROS * sizeof(categorias_secundario_index));
 
-    // if (!categorias_idx.categorias_secundario_idx) {
-    //     printf(ERRO_MEMORIA_INSUFICIENTE);
-    //     exit(1);
-    // } 
+    if (!categorias_idx.categorias_secundario_idx) {
+        printf(ERRO_MEMORIA_INSUFICIENTE);
+        exit(1);
+    } 
 
-    // /*for com qtd de jogos -> jogo j = recuperar jogo -> for dentro das cat dele -> if -> busca lista invertida*/
+    /*for com qtd de jogos -> jogo j = recuperar jogo -> for dentro das cat dele -> if -> busca lista invertida*/
 
-    // for(unsigned i = 0; i < qtd_registros_jogos; i++){
-    //     Jogo j = recuperar_registro_jogo(i);
+    for(unsigned i = 0; i < qtd_registros_jogos; i++){
+        Jogo j = recuperar_registro_jogo(i);
 
-    //     for(unsigned g = 0; g < QTD_MAX_CATEGORIAS; g++){
-    //         int result;
-    //         if(!inverted_list_secondary_search(&result,false,j.categorias[g],&categorias_idx)){
-    //             strcpy(categorias_idx.categorias_secundario_idx[categorias_idx.qtd_registros_secundario].chave_secundaria, j.categorias[g]);
-    //             categorias_idx.categorias_secundario_idx[categorias_idx.qtd_registros_secundario].primeiro_indice = categorias_idx.qtd_registros_primario;
-    //             categorias_idx.qtd_registros_secundario++;
-    //             strcpy(categorias_idx.categorias_primario_idx[categorias_idx.qtd_registros_primario].chave_primaria, j.id_game);
-    //             categorias_idx.categorias_primario_idx[categorias_idx.qtd_registros_primario].proximo_indice = -1;
-    //             categorias_idx.qtd_registros_primario++;
-    //         } else {
-    //             int aux;
-    //             for(int w = result; categorias_idx.categorias_primario_idx[w].proximo_indice != -1; w++){
-    //                 aux = categorias_idx.categorias_primario_idx[w].proximo_indice;
-    //             }
-
-    //             categorias_idx.categorias_primario_idx[aux].proximo_indice = categorias_idx.qtd_registros_primario;
-    //             strcpy(categorias_idx.categorias_primario_idx[categorias_idx.qtd_registros_primario].chave_primaria, j.id_game);
-    //             categorias_idx.categorias_primario_idx[categorias_idx.qtd_registros_primario].proximo_indice = -1;
-    //             categorias_idx.qtd_registros_primario++;
-    //         }
-    //         qsort(categorias_idx.categorias_secundario_idx, categorias_idx.qtd_registros_secundario, sizeof(inverted_list), qsort_categorias_secundario_idx); 
-    //     }
-    // }
-   // printf(ERRO_NAO_IMPLEMENTADO, "criar_categorias_idx");
+        for(unsigned g = 0; g < QTD_MAX_CATEGORIAS; g++){
+            if(*j.categorias[g] != '\0'){
+                inverted_list_insert(j.categorias[g], j.id_game, &categorias_idx);
+            }
+        }
+    }
+   //printf(ERRO_NAO_IMPLEMENTADO, "criar_categorias_idx");
 }
 
 
@@ -909,10 +891,9 @@ Usuario recuperar_registro_usuario(int rrn) {
 Jogo recuperar_registro_jogo(int rrn) {
     /* <<< COMPLETE AQUI A IMPLEMENTAÇÃO >>> */
     Jogo j;
-    char temp[TAM_REGISTRO_JOGO + 1], *p;
+    char temp[TAM_REGISTRO_JOGO + 1], *p , *q;
     strncpy(temp, ARQUIVO_JOGOS + (rrn * TAM_REGISTRO_JOGO), TAM_REGISTRO_JOGO);
     temp[TAM_REGISTRO_JOGO] = '\0';
-
     p = strtok(temp, ";");
     strcpy(j.id_game, p);
     p = strtok(NULL, ";");
@@ -926,9 +907,18 @@ Jogo recuperar_registro_jogo(int rrn) {
     p = strtok(NULL, ";");
     j.preco = atof(p);
     p = strtok(NULL, ";");
+    q = strtok(p, "|");
+    for(int i = 0; i < QTD_MAX_CATEGORIAS; i++){
+        if(q == NULL || strncmp(q, "#", 1) == 0 ){
+            *j.categorias[i] = '\0';
+        } else {
+            strcpy(j.categorias[i], q);
+        }
+        q = strtok(NULL, "|");
+    }
+    p = strtok(NULL, ";");
     // strcpy("", p);
     // p = strtok(NULL, ";");
-
     return j;
 
     //printf(ERRO_NAO_IMPLEMENTADO, "recuperar_registro_jogo");
@@ -1001,7 +991,17 @@ void escrever_registro_jogo(Jogo j, int rrn) {
     sprintf(p, "%013.2lf", j.preco);
     strcat(temp, p);
     strcat(temp, ";");
-    strcat(temp, "");
+    for(int i = 0; i < QTD_MAX_CATEGORIAS; i++){
+        if(*j.categorias[i] == '\0'){
+            strcat(temp, "");
+        } else {
+            if(i == 1 || i == 2)
+                strcat(temp, "|");
+
+                strcat(temp, j.categorias[i]);
+        }
+    }
+    // strcat(temp, "");
     strcat(temp, ";");
     
     for (int i = strlen(temp); i < TAM_REGISTRO_JOGO; i++)
@@ -1130,6 +1130,10 @@ void cadastrar_jogo_menu(char *titulo, char *desenvolvedor, char *editora, char*
     strcpy(j.editora, editora);
     strcpy(j.data_lancamento, lancamento);
     j.preco = preco;
+    *j.categorias[0] = '\0';
+    *j.categorias[1] = '\0';
+    *j.categorias[2] = '\0';
+
 
     jogos_idx[qtd_registros_jogos].rrn = qtd_registros_jogos;
     sprintf(jogos_idx[qtd_registros_jogos].id_game, "%.8u", qtd_registros_jogos);
@@ -1239,24 +1243,58 @@ void comprar_menu(char *id_user, char *titulo) {
     strcpy(c.data_compra, timestamp);
 
 
-    compras_idx[qtd_registros_compras+1].rrn = qtd_registros_compras;
+    compras_idx[qtd_registros_compras].rrn = qtd_registros_compras;
+    strcpy(compras_idx[qtd_registros_compras].id_game, aux_jogos->id_game);
+    strcpy(compras_idx[qtd_registros_compras].id_user, id_user);
+
+    strcpy(data_user_game_idx[qtd_registros_compras].data, timestamp);
+    strcpy(data_user_game_idx[qtd_registros_compras].id_game, aux_jogos->id_game);
+    strcpy(data_user_game_idx[qtd_registros_compras].id_user, id_user);
+
     qtd_registros_compras++;
 
-    escrever_registro_compra(c, compras_idx[qtd_registros_compras].rrn);
+    escrever_registro_compra(c, compras_idx[qtd_registros_compras-1].rrn);
 
-    criar_compras_idx();
+    qsort(compras_idx, qtd_registros_compras, sizeof(compras_index), qsort_compras_idx);    
 
     u.saldo = u.saldo - j.preco;
     escrever_registro_usuario(u, aux->rrn);
 
-    criar_data_user_game_idx();
+    qsort(data_user_game_idx, qtd_registros_compras, sizeof(data_user_game_index), qsort_data_user_game_idx);   
+    
 
     printf(SUCESSO);
 }
 
 void cadastrar_categoria_menu(char* titulo, char* categoria) {
     /* <<< COMPLETE AQUI A IMPLEMENTAÇÃO >>> */
-    printf(ERRO_NAO_IMPLEMENTADO, "cadastrar_categoria_menu");
+    titulos_index tempT;
+    strcpy(tempT.titulo, titulo);
+    titulos_index *aux_titulo = busca_binaria((void*)&tempT, titulo_idx, qtd_registros_jogos, sizeof(titulos_index), qsort_titulo_idx, false);
+    if(!aux_titulo){
+        printf(ERRO_REGISTRO_NAO_ENCONTRADO);
+        return;
+    }
+
+    jogos_index tempJ;
+    strcpy(tempJ.id_game, aux_titulo->id_game);
+    jogos_index *aux_jogo = busca_binaria((void*)&tempJ, jogos_idx, qtd_registros_jogos, sizeof(jogos_index), qsort_jogos_idx, false);
+    Jogo j = recuperar_registro_jogo(aux_jogo->rrn);
+    for(int i = 0; i < QTD_MAX_CATEGORIAS; i++){
+        if(strcmp(categoria, j.categorias[i]) == 0){
+            printf(ERRO_CATEGORIA_REPETIDA, aux_titulo->titulo,categoria);
+            return;
+        }
+        if(*j.categorias[i] == '\0'){
+            strcpy(j.categorias[i], categoria);
+            break;
+        }
+    }
+
+    escrever_registro_jogo(j, aux_jogo->rrn);
+    inverted_list_insert(categoria, aux_jogo->id_game, &categorias_idx);
+    printf(SUCESSO);
+    //printf(ERRO_NAO_IMPLEMENTADO, "cadastrar_categoria_menu");
 }
 
 
@@ -1331,7 +1369,39 @@ void listar_usuarios_id_user_menu() {
 
 void listar_jogos_categorias_menu(char *categoria) {
     /* <<< COMPLETE AQUI A IMPLEMENTAÇÃO >>> */
-    printf(ERRO_NAO_IMPLEMENTADO, "listar_jogo_categorias_menu");
+    // printf(REGS_PERCORRIDOS);
+    int result;
+    bool flag = inverted_list_secondary_search(&result, false, categoria,&categorias_idx);
+    
+    if(!flag){
+        printf(AVISO_NENHUM_REGISTRO_ENCONTRADO);
+        return;
+    }
+
+    char result_jogos[MAX_REGISTROS][TAM_CHAVE_CATEGORIAS_PRIMARIO_IDX];
+    int indice_fim;
+    printf(REGS_PERCORRIDOS);
+    int aux = inverted_list_primary_search(result_jogos, true, result, &indice_fim, &categorias_idx);
+    printf(" %d", indice_fim);
+    printf("\n");
+
+    if(aux == 0){
+        printf(AVISO_NENHUM_REGISTRO_ENCONTRADO);
+        return;
+    }
+
+    qsort(result_jogos, aux, sizeof(char**), qsort_jogos_idx);  
+    
+    for(int i = 0; i < aux; i++){
+        jogos_index temp;
+        // strncpy(temp.id_game, result_jogos[i], TAM_ID_GAME);
+        strncpy(temp.id_game, result_jogos[i], TAM_CHAVE_CATEGORIAS_PRIMARIO_IDX);
+
+        jogos_index *aux = busca_binaria((void*)&temp, jogos_idx, qtd_registros_jogos, sizeof(jogos_index), qsort_jogos_idx, false);
+        exibir_jogo(aux->rrn);
+    }
+
+    //printf(ERRO_NAO_IMPLEMENTADO, "listar_jogo_categorias_menu");
 }
 
 void listar_compras_periodo_menu(char *data_inicio, char *data_fim) {
@@ -1576,12 +1646,36 @@ int qsort_categorias_secundario_idx(const void *a, const void *b) {
 /* Funções de manipulação de Lista Invertida */
 void inverted_list_insert(char *chave_secundaria, char *chave_primaria, inverted_list *t) {
     /* <<< COMPLETE AQUI A IMPLEMENTAÇÃO >>> */
-    printf(ERRO_NAO_IMPLEMENTADO, "inverted_list_insert");
+    int result;
+    bool flag = inverted_list_secondary_search(&result,false,chave_secundaria, t);
+    
+    if(!flag){
+        strcpy(t->categorias_secundario_idx[t->qtd_registros_secundario].chave_secundaria, chave_secundaria);
+        t->categorias_secundario_idx[t->qtd_registros_secundario].primeiro_indice = t->qtd_registros_primario;
+        t->qtd_registros_secundario++;
+        strcpy(t->categorias_primario_idx[t->qtd_registros_primario].chave_primaria, chave_primaria);
+        t->categorias_primario_idx[t->qtd_registros_primario].proximo_indice = -1;
+        t->qtd_registros_primario++;
+        qsort(t->categorias_secundario_idx, t->qtd_registros_secundario, sizeof(categorias_secundario_index), qsort_categorias_secundario_idx); 
+    } else {
+        int aux = result;
+        for(int w = result; t->categorias_primario_idx[w].proximo_indice != -1; w = t->categorias_primario_idx[w].proximo_indice){
+            aux = categorias_idx.categorias_primario_idx[w].proximo_indice;
+        }
+        
+        t->categorias_primario_idx[aux].proximo_indice = t->qtd_registros_primario;
+        strcpy(t->categorias_primario_idx[t->qtd_registros_primario].chave_primaria, chave_primaria);
+        t->categorias_primario_idx[categorias_idx.qtd_registros_primario].proximo_indice = -1;
+        t->qtd_registros_primario++;
+    }
+    //printf(ERRO_NAO_IMPLEMENTADO, "inverted_list_insert");
 }
 
 bool inverted_list_secondary_search(int *result, bool exibir_caminho, char *chave_secundaria, inverted_list *t) {
     /* <<< COMPLETE AQUI A IMPLEMENTAÇÃO >>> */
-     categorias_secundario_index *aux = (categorias_secundario_index *)busca_binaria(&chave_secundaria, t->categorias_secundario_idx,t->qtd_registros_secundario ,sizeof(t->categorias_secundario_idx), qsort_categorias_secundario_idx, exibir_caminho);
+    categorias_secundario_index temp;
+    strcpy(temp.chave_secundaria, chave_secundaria);
+    categorias_secundario_index *aux = (categorias_secundario_index *)busca_binaria(&temp, t->categorias_secundario_idx,t->qtd_registros_secundario ,sizeof(categorias_secundario_index), qsort_categorias_secundario_idx, exibir_caminho);
 
     if (aux){
         if(result){
@@ -1595,7 +1689,20 @@ bool inverted_list_secondary_search(int *result, bool exibir_caminho, char *chav
 
 int inverted_list_primary_search(char result[][TAM_CHAVE_CATEGORIAS_PRIMARIO_IDX], bool exibir_caminho, int indice, int *indice_final, inverted_list *t) {
     /* <<< COMPLETE AQUI A IMPLEMENTAÇÃO >>> */
-    printf(ERRO_NAO_IMPLEMENTADO, "inverted_list_primary_search");
+    int count = 0;
+    *indice_final = indice;
+    for(int i = indice; t->categorias_primario_idx[i].proximo_indice != -1; i = t->categorias_primario_idx[i].proximo_indice){
+        if(result)
+            strcpy(result[count], t->categorias_primario_idx[i].chave_primaria);
+        if(exibir_caminho)
+            printf(" %d", i);
+        if(indice_final)
+            *indice_final = t->categorias_primario_idx[i].proximo_indice; 
+        count++;       
+    }
+    strcpy(result[count], t->categorias_primario_idx[*indice_final].chave_primaria);
+    return count+1;
+    //printf(ERRO_NAO_IMPLEMENTADO, "inverted_list_primary_search");
 }
 
 char* strpadright(char *str, char pad, unsigned size) {
